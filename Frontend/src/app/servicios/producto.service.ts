@@ -18,4 +18,8 @@ export class ProductoService {
     obtenerProductoPorId(id: number): Observable<Producto> {
         return this.http.get<Producto>(`${this.apiUrl}/${id}`);
     }
+
+    guardarProducto(producto: Producto): Observable<Producto> {
+        return this.http.post<Producto>(this.apiUrl, producto);
+    }
 }
