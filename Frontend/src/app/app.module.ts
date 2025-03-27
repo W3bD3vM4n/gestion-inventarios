@@ -7,18 +7,24 @@ import { ListaProductosComponent } from './componentes/lista-productos/lista-pro
 import { DetalleProductosComponent } from './componentes/detalle-productos/detalle-productos.component';
 import { ProductosComponent } from './paginas/productos/productos.component';
 import { HttpClientModule } from '@angular/common/http';
+import { AgregarProductoComponent } from './paginas/productos/agregar-producto/agregar-producto.component';
+import { EditarProductoComponent } from './paginas/productos/editar-producto/editar-producto.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
     AppComponent,
     ListaProductosComponent,
     DetalleProductosComponent,
-    ProductosComponent
+    ProductosComponent,
+    AgregarProductoComponent,
+    EditarProductoComponent
   ],
   imports: [
     BrowserModule,
       AppRoutingModule,
-      HttpClientModule
+      HttpClientModule,
+      ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

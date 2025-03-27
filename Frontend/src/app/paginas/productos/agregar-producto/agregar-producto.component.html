@@ -1,0 +1,55 @@
+<div class="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-md">
+    <h2 class="text-2xl font-semibold text-gray-700 mb-4">Agregar Producto</h2>
+
+    <form [formGroup]="formularioProducto" (ngSubmit)="onSubmit()">
+        <div class="grid grid-cols-2 gap-4">
+            <!-- Nombre -->
+            <div>
+                <label for="nombre" class="block text-gray-600 font-medium">Nombre del Producto:</label>
+                <input id="nombre" formControlName="nombre" required
+                       class="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <div *ngIf="formularioProducto.controls['nombre'].invalid && formularioProducto.controls['nombre'].touched"
+                     class="text-sm text-red-500 mt-1">
+                    Nombre de producto requerido.
+                </div>
+            </div>
+
+            <!-- Descripción -->
+            <div>
+                <label for="descripcion" class="block text-gray-600 font-medium">Descripción:</label>
+                <textarea id="descripcion" formControlName="descripcion"
+                          class="w-full border rounded-md px-3 py-2 h-[42px] overflow-y-auto resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+            </div>
+
+            <!-- Precio -->
+            <div>
+                <label for="precio" class="block text-gray-600 font-medium">Precio:</label>
+                <input id="precio" type="number" formControlName="precio" required
+                       class="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <div *ngIf="formularioProducto.controls['precio'].invalid && formularioProducto.controls['precio'].touched"
+                     class="text-sm text-red-500 mt-1">
+                    El precio debe ser un número válido.
+                </div>
+            </div>
+
+            <!-- Stock -->
+            <div>
+                <label for="stock" class="block text-gray-600 font-medium">Stock:</label>
+                <input id="stock" type="number" formControlName="stock" required
+                       class="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <div *ngIf="formularioProducto.controls['stock'].invalid && formularioProducto.controls['stock'].touched"
+                     class="text-sm text-red-500 mt-1">
+                    El stock debe ser al menos 1.
+                </div>
+            </div>
+        </div>
+
+        <!-- Botón Guardar -->
+        <div class="mt-6">
+            <button type="submit" [disabled]="formularioProducto.invalid"
+                    class="bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 disabled:opacity-50">
+                Guardar
+            </button>
+        </div>
+    </form>
+</div>

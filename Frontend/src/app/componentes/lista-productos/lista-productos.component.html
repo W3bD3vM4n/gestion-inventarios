@@ -1,20 +1,41 @@
-<table>
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Nombre</th>
-            <th>Descripcion</th>
-            <th>Precio</th>
-            <th>Stock</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr *ngFor="let producto of productos">
-            <td>{{ producto.id }}</td>
-            <td>{{ producto.nombre }}</td>
-            <td>{{ producto.descripcion }}</td>
-            <td>{{ producto.precio | currency }}</td>
-            <td>{{ producto.stock }}</td>
-        </tr>
-    </tbody>
-</table>
+<div class="p-4 space-y-4">
+    <!-- Boton Agregar -->
+    <div class="flex justify-start">
+        <a [routerLink]="['/agregar-producto']" class="bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600">
+            Agregar
+        </a>
+    </div>
+
+    <!-- Tabla Productos -->
+    <table class="min-w-full bg-white border border-gray-200 rounded-md shadow-md">
+        <thead class="bg-gray-100">
+            <tr>
+                <th class="px-6 py-3 text-left text-gray-600">ID</th>
+                <th class="px-6 py-3 text-left text-gray-600">Nombre</th>
+                <th class="px-6 py-3 text-left text-gray-600">Descripcion</th>
+                <th class="px-6 py-3 text-left text-gray-600">Precio</th>
+                <th class="px-6 py-3 text-left text-gray-600">Stock</th>
+                <th class="px-6 py-3 text-left text-gray-600">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let producto of productos">
+                <td class="px-6 py-3">{{ producto.id }}</td>
+                <td class="px-6 py-3">{{ producto.nombre }}</td>
+                <td class="px-6 py-3">{{ producto.descripcion }}</td>
+                <td class="px-6 py-3">{{ producto.precio | currency }}</td>
+                <td class="px-6 py-3">{{ producto.stock }}</td>
+                <td class="px-6 py-3 flex space-x-2">
+                    <!-- Boton Editar -->
+                    <a [routerLink]="['/editar-producto', producto.id]" class="bg-blue-500 text-white py-1 px-3 rounded-md hover:bg-blue-600">
+                        Editar
+                    </a>
+                    <!-- Boton Eliminar -->
+                    <button class="bg-red-500 text-white py-1 px-3 rounded-md hover:bg-red-600">
+                        Eliminar
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
