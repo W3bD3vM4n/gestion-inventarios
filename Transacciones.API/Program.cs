@@ -40,6 +40,10 @@ builder.Services.AddTransient<TransaccionService>();
 builder.Services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions
     .ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
+// Register HttpClient for ProductoService
+builder.Services.AddHttpClient<IProductoService, ProductoService>();
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

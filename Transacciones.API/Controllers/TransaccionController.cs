@@ -4,32 +4,34 @@ using Transacciones.Services.Services;
 
 namespace Transacciones.API.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
-    public class TransaccionController : Controller
+    [Route("api/[controller]")]
+    public class TransaccionController : ControllerBase
     {
+        private readonly IProductoService _productoService;
         private readonly TransaccionService _transaccionService;
 
-        public TransaccionController(TransaccionService transaccionService)
+        public TransaccionController(IProductoService productoService, TransaccionService transaccionService)
         {
+            _productoService = productoService;
             _transaccionService = transaccionService;
         }
 
         [HttpGet]
         public ActionResult Obtener()
         {
-            var transaccion = _transaccionService.ObtenerTodos();
+            var transacciones = _transaccionService.ObtenerTodos();
 
-            if (!transaccion.Any())
+            if (!transacciones.Any())
             {
                 return NotFound();
             }
 
-            return Ok(transaccion);
+            return Ok(transacciones);
         }
 
         [HttpGet("{id}")]
-        public ActionResult PorId(int id)
+        public async Task<IActionResult> PorId(int id)
         {
             var transaccion = _transaccionService.ObtenerPorId(id);
 
@@ -38,7 +40,20 @@ namespace Transacciones.API.Controllers
                 return NotFound();
             }
 
-            return Ok(transaccion);
+            // Obtener detalles de ProductosService mediante una llamada HTTP
+            var producto = await _productoService.ObtenerPorIdAsync(transaccion.ProductoId);
+
+            var respuesta = new
+            {
+                transaccion.Id,
+                transaccion.Fecha,
+                transaccion.TipoTransaccion,
+                Producto = producto,  // Une detalles del Producto
+                transaccion.Cantidad,
+                transaccion.PrecioTotal
+            };
+
+            return Ok(respuesta);
         }
 
         [HttpPost]

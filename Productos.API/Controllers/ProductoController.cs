@@ -1,12 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Transacciones.Services.Dto;
 using Productos.Services.Dto;
 using Productos.Services.Services;
 
 namespace Productos.API.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
-    public class ProductoController : Controller
+    [Route("api/[controller]")]
+    public class ProductoController : ControllerBase
     {
         private readonly ProductoService _productoService;
 
@@ -18,18 +19,18 @@ namespace Productos.API.Controllers
         [HttpGet]
         public ActionResult Obtener()
         {
-            var producto = _productoService.ObtenerTodos();
+            var productos = _productoService.ObtenerTodos();
 
-            if (!producto.Any())
+            if (!productos.Any())
             {
                 return NotFound();
             }
 
-            return Ok(producto);
+            return Ok(productos);
         }
 
         [HttpGet("{id}")]
-        public ActionResult PorId(int id)
+        public ActionResult<ProductoDto> PorId(int id)
         {
             var producto = _productoService.ObtenerPorId(id);
 
