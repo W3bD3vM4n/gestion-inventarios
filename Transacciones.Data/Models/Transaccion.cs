@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace Transacciones.Data.Models;
+﻿namespace Transacciones.Data.Models;
 
 public partial class Transaccion
 {

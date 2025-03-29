@@ -8,6 +8,10 @@
                 <label for="nombre" class="block text-gray-600 font-medium">Nombre del Producto:</label>
                 <input id="nombre" formControlName="nombre" required
                        class="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <div *ngIf="formularioProducto.controls['nombre'].invalid && formularioProducto.controls['nombre'].touched"
+                     class="text-sm text-red-500 mt-1">
+                    Nombre de producto requerido.
+                </div>
             </div>
 
             <!-- Descripción -->
@@ -17,11 +21,41 @@
                           class="w-full border rounded-md px-3 py-2 h-[42px] overflow-y-auto resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
             </div>
 
+            <!-- Categoría -->
+            <div>
+                <label for="categoria_id" class="block text-gray-600 font-medium">Categoría:</label>
+                <select id="categoria_id" formControlName="categoria_id" required
+                        class="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option *ngFor="let categoria of categorias" [ngValue]="categoria.id">
+                        {{ categoria.nombre }}
+                    </option>
+                </select>
+                <div *ngIf="formularioProducto.controls['categoria_id'].invalid && formularioProducto.controls['categoria_id'].touched"
+                     class="text-sm text-red-500 mt-1">
+                    Categoría de producto requerida.
+                </div>
+            </div>
+
+            <!-- Imagen -->
+            <div>
+                <label for="imagen" class="block text-gray-600 font-medium">Imagen (URL):</label>
+                <input id="imagen" type="text" formControlName="imagen"
+                       class="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <div *ngIf="formularioProducto.controls['imagen'].invalid && formularioProducto.controls['imagen'].touched"
+                     class="text-sm text-red-500 mt-1">
+                    Ingresa una URL válida de imagen.
+                </div>
+            </div>
+
             <!-- Precio -->
             <div>
                 <label for="precio" class="block text-gray-600 font-medium">Precio:</label>
                 <input id="precio" type="number" formControlName="precio" required
                        class="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <div *ngIf="formularioProducto.controls['precio'].invalid && formularioProducto.controls['precio'].touched"
+                     class="text-sm text-red-500 mt-1">
+                    El precio debe ser un número válido.
+                </div>
             </div>
 
             <!-- Stock -->
@@ -29,6 +63,10 @@
                 <label for="stock" class="block text-gray-600 font-medium">Stock:</label>
                 <input id="stock" type="number" formControlName="stock" required
                        class="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <div *ngIf="formularioProducto.controls['stock'].invalid && formularioProducto.controls['stock'].touched"
+                     class="text-sm text-red-500 mt-1">
+                    El stock debe ser al menos 1.
+                </div>
             </div>
         </div>
 

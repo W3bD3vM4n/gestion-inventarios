@@ -14,8 +14,37 @@ export class ListaProductosComponent implements OnInit {
     constructor(private productoService: ProductoService) { }
 
     ngOnInit() {
-        this.productoService.obtenerProductos().subscribe((data) => {
-            this.productos = data;
+        this.cargarProductos();
+    }
+
+    cargarProductos() {
+        this.productoService.obtenerProductos().subscribe({
+            next: (data) => {
+                this.productos = data;
+            },
+            error: (error) => {
+                console.error('Error al cargar productos:', error);
+                alert('No se pudieron cargar los productos');
+            }
         });
+    }
+
+    eliminarProducto(id: number) {
+        // Confirmar borrado
+        const confirmacion = confirm('¿Seguro de que desea eliminarlo?');
+
+        if (confirmacion) {
+            this.productoService.eliminarProducto(id).subscribe({
+                next: () => {
+                    // Retirar el producto de la lista
+                    this.productos = this.productos.filter(p => p.id !== id);
+                    alert('Producto eliminado exitosamente');
+                },
+                error: (error) => {
+                    console.error('Error al eliminar producto:', error);
+                    alert('No se pudo eliminar el producto');
+                }
+            });
+        }
     }
 }

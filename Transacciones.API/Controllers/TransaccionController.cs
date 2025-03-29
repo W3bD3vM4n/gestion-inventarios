@@ -18,7 +18,7 @@ namespace Transacciones.API.Controllers
         }
 
         [HttpGet]
-        public ActionResult Obtener()
+        public IActionResult Obtener()
         {
             var transacciones = _transaccionService.ObtenerTodos();
 
@@ -43,17 +43,15 @@ namespace Transacciones.API.Controllers
             // Obtener detalles de ProductosService mediante una llamada HTTP
             var producto = await _productoService.ObtenerPorIdAsync(transaccion.ProductoId);
 
-            var respuesta = new
+            return Ok(new
             {
                 transaccion.Id,
                 transaccion.Fecha,
-                transaccion.TipoTransaccion,
-                Producto = producto,  // Une detalles del Producto
+                TipoTransaccion = transaccion.TipoTransaccion,
+                Producto = producto,
                 transaccion.Cantidad,
                 transaccion.PrecioTotal
-            };
-
-            return Ok(respuesta);
+            });
         }
 
         [HttpPost]

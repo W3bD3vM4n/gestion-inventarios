@@ -1,10 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http.Json;
-using System.Text;
-using System.Threading.Tasks;
 using Transacciones.Services.Dto;
 
 namespace Transacciones.Services.Services
@@ -19,33 +14,29 @@ namespace Transacciones.Services.Services
         public ProductoService(HttpClient httpClient, IConfiguration configuracion)
         {
             _httpClient = httpClient;
-            _productoApiUrl = configuracion["ProductoApiUrl"] ?? ProductosApiUrl; // Regresa la constante si no está en la configuración
+            _productoApiUrl = configuracion["ProductoApiUrl"] ?? ProductosApiUrl;
         }
 
         public async Task<ProductoDto?> ObtenerPorIdAsync(int id)
         {
-            Console.WriteLine($"Obtener producto con ID: {id} de {_productoApiUrl}/api/productos/{id}");
-
-            var respuesta = await _httpClient.GetAsync($"{_productoApiUrl}/api/productos/{id}");
-
-            if (!respuesta.IsSuccessStatusCode)
+            try
             {
-                Console.WriteLine($"Producto API error: {respuesta.StatusCode}");
+                Console.WriteLine($"Obtener producto con ID: {id} de {_productoApiUrl}/{id}");
+
+                var respuesta = await _httpClient.GetFromJsonAsync<ProductoDto>($"{_productoApiUrl}/{id}");
+
+                if (respuesta != null)
+                {
+                    Console.WriteLine($"Producto obtenido: {respuesta.Nombre}, Precio: {respuesta.Precio}");
+                }
+
+                return respuesta;
+            }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine($"Error al obtener producto: {ex.Message}");
                 return null;
             }
-
-            var producto = await respuesta.Content.ReadFromJsonAsync<ProductoDto>();
-
-            if (producto == null)
-            {
-                Console.WriteLine($"Producto API regreso null por ID: {id}");
-            }
-            else
-            {
-                Console.WriteLine($"Producto obtenido: {producto.Nombre}, Precio: {producto.Precio}");
-            }
-
-            return producto;
         }
     }
 }

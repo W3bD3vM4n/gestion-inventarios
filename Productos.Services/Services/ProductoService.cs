@@ -1,10 +1,5 @@
 ﻿using Productos.Data.Models;
 using Productos.Services.Dto;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Productos.Services.Services
 {
@@ -32,7 +27,7 @@ namespace Productos.Services.Services
                         Id = producto.Id,
                         Nombre = producto.Nombre,
                         Descripcion = producto.Descripcion,
-                        Categoria = producto.Categoria.Nombre,
+                        Categoria = producto.Categoria != null ? producto.Categoria.Nombre : "Sin Categoría",
                         Imagen = producto.Imagen,
                         Precio = producto.Precio,
                         Stock = producto.Stock
@@ -73,7 +68,20 @@ namespace Productos.Services.Services
             }
         }
 
-        public Producto Agregar(ProductoCreateRequest peticion)
+        public List<Categoria> ObtenerTodosCategorias()
+        {
+            try
+            {
+                var categorias = _productoDbContext.Categorias.ToList();
+                return categorias;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<Producto> AgregarAsync(ProductoCreateRequest peticion)
         {
             try
             {
@@ -88,12 +96,13 @@ namespace Productos.Services.Services
                 };
 
                 _productoDbContext.Productos.Add(producto);
-                _productoDbContext.SaveChanges();
+                await _productoDbContext.SaveChangesAsync();
 
                 return producto;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine($"Error: {ex.Message}");
                 throw;
             }
         }

@@ -13,13 +13,13 @@ namespace Productos.Services.Dto
         public string Nombre { get; set; }
 
         [JsonPropertyName("descripcion")]
-        public string Descripcion { get; set; }
+        public string? Descripcion { get; set; }
 
         [JsonPropertyName("categoria_id")]
         public int CategoriaId { get; set; }
 
         [JsonPropertyName("imagen")]
-        public string Imagen { get; set; }
+        public string? Imagen { get; set; }
 
         [JsonPropertyName("precio")]
         public decimal Precio { get; set; }

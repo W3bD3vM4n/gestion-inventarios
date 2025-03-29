@@ -2,6 +2,7 @@
 using Transacciones.Services.Dto;
 using Productos.Services.Dto;
 using Productos.Services.Services;
+using Newtonsoft.Json;
 
 namespace Productos.API.Controllers
 {
@@ -42,10 +43,43 @@ namespace Productos.API.Controllers
             return Ok(producto);
         }
 
-        [HttpPost]
-        public ActionResult Crear(ProductoCreateRequest peticion)
+        [HttpGet("Categorias")]
+        public IActionResult ObtenerCategorias()
         {
-            return Ok(_productoService.Agregar(peticion));
+            try
+            {
+                var categorias = _productoService.ObtenerTodosCategorias();
+                return Ok(categorias);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Error al obtener categorías");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Crear([FromBody] ProductoCreateRequest peticion)
+        {
+            Console.WriteLine(JsonConvert.SerializeObject(peticion));
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (peticion == null)
+            {
+                return BadRequest("Datos de producto invalidos");
+            }
+
+            var producto = await _productoService.AgregarAsync(peticion);
+
+            if (producto == null)
+            {
+                return StatusCode(500, "Error al crear el producto");
+            }
+
+            return CreatedAtAction(nameof(PorId), new { id = producto.Id }, producto);
         }
 
         [HttpPut]
