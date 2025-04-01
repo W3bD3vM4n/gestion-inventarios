@@ -17,6 +17,7 @@ namespace Transacciones.Services.Services
             _productoApiUrl = configuracion["ProductoApiUrl"] ?? ProductosApiUrl;
         }
 
+
         public async Task<ProductoDto?> ObtenerPorIdAsync(int id)
         {
             try

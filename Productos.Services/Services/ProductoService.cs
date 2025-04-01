@@ -14,7 +14,8 @@ namespace Productos.Services.Services
             _productoDbContext = dbContext;
         }
 
-        public List<ProductoResponse> ObtenerTodos()
+
+        public List<ProductoResponse> ObtenerTodosLosProductos()
         {
             try
             {
@@ -44,7 +45,7 @@ namespace Productos.Services.Services
             }
         }
 
-        public ProductoResponse ObtenerPorId(int id)
+        public ProductoResponse ObtenerProductoPorId(int id)
         {
             try
             {
@@ -70,7 +71,7 @@ namespace Productos.Services.Services
             }
         }
 
-        public List<Categoria> ObtenerTodosCategorias()
+        public List<Categoria> ObtenerTodasLasCategorias()
         {
             try
             {
@@ -83,7 +84,8 @@ namespace Productos.Services.Services
             }
         }
 
-        public async Task<Producto> AgregarAsync(ProductoCreateRequest peticion)
+
+        public async Task<Producto> CrearProductoAsync(ProductoCreateRequest peticion)
         {
             try
             {
@@ -109,7 +111,8 @@ namespace Productos.Services.Services
             }
         }
 
-        public Producto Actualizar(ProductoUpdateRequest peticion)
+
+        public Producto ActualizarProducto(ProductoUpdateRequest peticion)
         {
             try
             {
@@ -132,7 +135,6 @@ namespace Productos.Services.Services
                 throw;
             }
         }
-
 
         public async Task<Producto> ActualizarStockAsync(StockUpdateRequest peticion)
         {
@@ -161,7 +163,7 @@ namespace Productos.Services.Services
         }
 
 
-        public Producto? Eliminar(int id)
+        public Producto? EliminarProducto(int id)
         {
             try
             {

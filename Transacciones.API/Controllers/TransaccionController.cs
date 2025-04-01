@@ -17,10 +17,11 @@ namespace Transacciones.API.Controllers
             _transaccionService = transaccionService;
         }
 
+
         [HttpGet]
-        public IActionResult Obtener()
+        public IActionResult ObtenerTodo()
         {
-            var transacciones = _transaccionService.ObtenerTodos();
+            var transacciones = _transaccionService.ObtenerTodasLasTransacciones();
 
             if (!transacciones.Any())
             {
@@ -31,9 +32,9 @@ namespace Transacciones.API.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> PorId(int id)
+        public async Task<IActionResult> ObtenerPorId(int id)
         {
-            var transaccion = _transaccionService.ObtenerPorId(id);
+            var transaccion = _transaccionService.ObtenerTransaccionPorId(id);
 
             if (transaccion == null)
             {
@@ -54,6 +55,7 @@ namespace Transacciones.API.Controllers
             });
         }
 
+
         [HttpPost]
         public async Task<IActionResult> Crear([FromBody] TransaccionCreateRequest peticion)
         {
@@ -62,8 +64,8 @@ namespace Transacciones.API.Controllers
 
             try
             {
-                var transaccion = await _transaccionService.AgregarAsync(peticion);
-                return CreatedAtAction(nameof(PorId), new { id = transaccion.Id }, transaccion);
+                var transaccion = await _transaccionService.CrearTransaccionAsync(peticion);
+                return CreatedAtAction(nameof(ObtenerPorId), new { id = transaccion.Id }, transaccion);
             }
             catch (Exception ex)
             {
@@ -71,18 +73,20 @@ namespace Transacciones.API.Controllers
             }
         }
 
+
         [HttpPut]
-        public ActionResult Refrescar(TransaccionUpdateRequest peticion)
+        public ActionResult Actualizar(TransaccionUpdateRequest peticion)
         {
-            return Ok(_transaccionService.Actualizar(peticion));
+            return Ok(_transaccionService.ActualizarTransaccion(peticion));
         }
 
+
         [HttpDelete("{id}")]
-        public ActionResult Borrar(int id)
+        public ActionResult Eliminar(int id)
         {
             bool ocurrioUnError = false;
 
-            _transaccionService.Eliminar(id);
+            _transaccionService.EliminarTransaccion(id);
 
             if (ocurrioUnError)
             {

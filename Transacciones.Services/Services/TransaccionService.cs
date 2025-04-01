@@ -28,7 +28,8 @@ namespace Transacciones.Services.Services
             _productoApiUrl = configuration["ProductoApiUrl"]; // Esto viene de appsettings.json
         }
 
-        public List<TransaccionResponse> ObtenerTodos()
+
+        public List<TransaccionResponse> ObtenerTodasLasTransacciones()
         {
             try
             {
@@ -58,7 +59,7 @@ namespace Transacciones.Services.Services
             }
         }
 
-        public TransaccionResponse ObtenerPorId(int id)
+        public TransaccionResponse ObtenerTransaccionPorId(int id)
         {
             try
             {
@@ -85,7 +86,8 @@ namespace Transacciones.Services.Services
             }
         }
 
-        public async Task<Transaccion> AgregarAsync(TransaccionCreateRequest peticion)
+
+        public async Task<Transaccion> CrearTransaccionAsync(TransaccionCreateRequest peticion)
         {
             try
             {
@@ -138,7 +140,8 @@ namespace Transacciones.Services.Services
             }
         }
 
-        public Transaccion Actualizar(TransaccionUpdateRequest peticion)
+
+        public Transaccion ActualizarTransaccion(TransaccionUpdateRequest peticion)
         {
             try
             {
@@ -186,7 +189,8 @@ namespace Transacciones.Services.Services
             }
         }
 
-        public Transaccion? Eliminar(int id)
+
+        public Transaccion? EliminarTransaccion(int id)
         {
             try
             {

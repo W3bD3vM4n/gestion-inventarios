@@ -17,10 +17,11 @@ namespace Productos.API.Controllers
             _productoService = productoService;
         }
 
+
         [HttpGet]
-        public ActionResult Obtener()
+        public ActionResult ObtenerTodo()
         {
-            var productos = _productoService.ObtenerTodos();
+            var productos = _productoService.ObtenerTodosLosProductos();
 
             if (!productos.Any())
             {
@@ -31,9 +32,9 @@ namespace Productos.API.Controllers
         }
 
         [HttpGet("{id}")]
-        public ActionResult<ProductoDto> PorId(int id)
+        public ActionResult<ProductoDto> ObtenerPorId(int id)
         {
-            var producto = _productoService.ObtenerPorId(id);
+            var producto = _productoService.ObtenerProductoPorId(id);
 
             if (producto == null)
             {
@@ -48,7 +49,7 @@ namespace Productos.API.Controllers
         {
             try
             {
-                var categorias = _productoService.ObtenerTodosCategorias();
+                var categorias = _productoService.ObtenerTodasLasCategorias();
                 return Ok(categorias);
             }
             catch (Exception)
@@ -56,6 +57,7 @@ namespace Productos.API.Controllers
                 return StatusCode(500, "Error al obtener categorías");
             }
         }
+
 
         [HttpPost]
         public async Task<IActionResult> Crear([FromBody] ProductoCreateRequest peticion)
@@ -72,20 +74,21 @@ namespace Productos.API.Controllers
                 return BadRequest("Datos de producto invalidos");
             }
 
-            var producto = await _productoService.AgregarAsync(peticion);
+            var producto = await _productoService.CrearProductoAsync(peticion);
 
             if (producto == null)
             {
                 return StatusCode(500, "Error al crear el producto");
             }
 
-            return CreatedAtAction(nameof(PorId), new { id = producto.Id }, producto);
+            return CreatedAtAction(nameof(ObtenerPorId), new { id = producto.Id }, producto);
         }
 
+
         [HttpPut]
-        public ActionResult Refrescar(ProductoUpdateRequest peticion)
+        public ActionResult Actualizar(ProductoUpdateRequest peticion)
         {
-            return Ok(_productoService.Actualizar(peticion));
+            return Ok(_productoService.ActualizarProducto(peticion));
         }
 
         [HttpPut("stock")]
@@ -108,12 +111,13 @@ namespace Productos.API.Controllers
             }
         }
 
+
         [HttpDelete("{id}")]
-        public ActionResult Borrar(int id)
+        public ActionResult Eliminar(int id)
         {
             bool ocurrioUnError = false;
 
-            _productoService.Eliminar(id);
+            _productoService.EliminarProducto(id);
 
             if (ocurrioUnError)
             {
