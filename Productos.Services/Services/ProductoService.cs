@@ -1,5 +1,7 @@
-﻿using Productos.Data.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using Productos.Data.Models;
 using Productos.Services.Dto;
+using Transacciones.Services.Dto;
 
 namespace Productos.Services.Services
 {
@@ -130,6 +132,34 @@ namespace Productos.Services.Services
                 throw;
             }
         }
+
+
+        public async Task<Producto> ActualizarStockAsync(StockUpdateRequest peticion)
+        {
+            var producto = await _productoDbContext.Productos
+                .FirstOrDefaultAsync(x => x.Id == peticion.ProductoId);
+
+            if (producto == null)
+                return null;
+
+            // Incrementar o decrementar el stock basado en el tipo de transacción
+            if (peticion.EsIncremento)
+            {
+                producto.Stock += peticion.Cantidad;
+            }
+            else
+            {
+                // Verificar si hay suficiente stock para la venta
+                if (producto.Stock < peticion.Cantidad)
+                    throw new Exception("Stock insuficiente para realizar esta venta");
+
+                producto.Stock -= peticion.Cantidad;
+            }
+
+            await _productoDbContext.SaveChangesAsync();
+            return producto;
+        }
+
 
         public Producto? Eliminar(int id)
         {

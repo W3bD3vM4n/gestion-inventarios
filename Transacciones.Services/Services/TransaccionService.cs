@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
+using System.Net.Http;
 using System.Text;
-using System.Threading.Tasks;
 using Transacciones.Data.Models;
 using Transacciones.Services.Dto;
 
@@ -11,10 +10,22 @@ namespace Transacciones.Services.Services
     public class TransaccionService
     {
         private readonly TransaccionDbContext _transaccionDbContext;
+        private readonly HttpClient _httpClient;
+        private readonly string _productoApiUrl;
 
         public TransaccionService(TransaccionDbContext dbContext)
         {
             _transaccionDbContext = dbContext;
+        }
+
+        public TransaccionService(
+            TransaccionDbContext dbContext,
+            HttpClient httpClient,
+            IConfiguration configuration)
+        {
+            _transaccionDbContext = dbContext;
+            _httpClient = httpClient;
+            _productoApiUrl = configuration["ProductoApiUrl"]; // Esto viene de appsettings.json
         }
 
         public List<TransaccionResponse> ObtenerTodos()
@@ -74,10 +85,30 @@ namespace Transacciones.Services.Services
             }
         }
 
-        public Transaccion Agregar(TransaccionCreateRequest peticion)
+        public async Task<Transaccion> AgregarAsync(TransaccionCreateRequest peticion)
         {
             try
             {
+                // Si es una venta, verificar stock disponible primero
+                if (peticion.TipoTransaccionId == 2) // el ID para ventas es 2
+                {
+                    // Obtener información del producto
+                    var response = await _httpClient.GetAsync($"{_productoApiUrl}/api/Producto/{peticion.ProductoId}");
+
+                    if (!response.IsSuccessStatusCode)
+                        throw new Exception("No se pudo verificar el producto");
+
+                    var productoJson = await response.Content.ReadAsStringAsync();
+                    var producto = JsonConvert.DeserializeObject<ProductoDto>(productoJson);
+
+                    if (producto.Stock < peticion.Cantidad)
+                        throw new Exception("Stock insuficiente para esta venta");
+                }
+
+                // Calcular precio total
+                peticion.PrecioTotal = peticion.Cantidad * peticion.PrecioUnitario;
+
+                // Crear la transacción
                 var transaccion = new Transaccion()
                 {
                     Fecha = peticion.Fecha,
@@ -90,12 +121,19 @@ namespace Transacciones.Services.Services
                 };
 
                 _transaccionDbContext.Transacciones.Add(transaccion);
-                _transaccionDbContext.SaveChanges();
+                await _transaccionDbContext.SaveChangesAsync();
+
+                // Actualizar el stock del producto
+                await ActualizarStockProducto(
+                    peticion.ProductoId,
+                    peticion.Cantidad,
+                    peticion.TipoTransaccionId == 1); // Asumiendo que 1 es el ID para compras
 
                 return transaccion;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine($"Error en transacción: {ex.Message}");
                 throw;
             }
         }
@@ -122,6 +160,29 @@ namespace Transacciones.Services.Services
             catch (Exception)
             {
                 throw;
+            }
+        }
+
+        private async Task ActualizarStockProducto(int productoId, int cantidad, bool esIncremento)
+        {
+            var stockUpdate = new StockUpdateRequest
+            {
+                ProductoId = productoId,
+                Cantidad = cantidad,
+                EsIncremento = esIncremento
+            };
+
+            var content = new StringContent(
+                JsonConvert.SerializeObject(stockUpdate),
+                Encoding.UTF8,
+                "application/json");
+
+            var response = await _httpClient.PutAsync($"{_productoApiUrl}/api/Producto/stock", content);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorMessage = await response.Content.ReadAsStringAsync();
+                throw new Exception($"Error al actualizar stock: {errorMessage}");
             }
         }
 

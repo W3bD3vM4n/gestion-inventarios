@@ -88,6 +88,26 @@ namespace Productos.API.Controllers
             return Ok(_productoService.Actualizar(peticion));
         }
 
+        [HttpPut("stock")]
+        public async Task<IActionResult> ActualizarStock([FromBody] StockUpdateRequest peticion)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            try
+            {
+                var producto = await _productoService.ActualizarStockAsync(peticion);
+                if (producto == null)
+                    return NotFound("Producto no encontrado");
+
+                return Ok(producto);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpDelete("{id}")]
         public ActionResult Borrar(int id)
         {

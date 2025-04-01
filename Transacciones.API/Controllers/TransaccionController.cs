@@ -55,9 +55,20 @@ namespace Transacciones.API.Controllers
         }
 
         [HttpPost]
-        public ActionResult Crear(TransaccionCreateRequest peticion)
+        public async Task<IActionResult> Crear([FromBody] TransaccionCreateRequest peticion)
         {
-            return Ok(_transaccionService.Agregar(peticion));
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            try
+            {
+                var transaccion = await _transaccionService.AgregarAsync(peticion);
+                return CreatedAtAction(nameof(PorId), new { id = transaccion.Id }, transaccion);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPut]
