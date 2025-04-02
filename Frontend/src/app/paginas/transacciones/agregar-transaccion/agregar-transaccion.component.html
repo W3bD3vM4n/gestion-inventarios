@@ -1,0 +1,67 @@
+<div class="container mt-4">
+    <h2>Agregar Nueva Transacción</h2>
+
+    <form [formGroup]="formularioTransaccion" (ngSubmit)="onSubmit()" class="mt-4">
+        <div class="mb-3">
+            <label for="TipoTransaccionId" class="form-label">Tipo de Transacción</label>
+            <select id="TipoTransaccionId" formControlName="TipoTransaccionId" class="form-select">
+                <option value="">Seleccionar tipo</option>
+                <option *ngFor="let tipo of tiposTransaccion" [value]="tipo.id">{{ tipo.tipo }}</option>
+            </select>
+            <div *ngIf="formularioTransaccion.get('TipoTransaccionId')?.invalid && formularioTransaccion.get('TipoTransaccionId')?.touched" class="text-danger">
+                Tipo de transacción es requerido
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="ProductoId" class="form-label">Producto</label>
+            <select id="ProductoId" formControlName="ProductoId" class="form-select">
+                <option value="">Seleccionar producto</option>
+                <option *ngFor="let producto of productos" [value]="producto.id">{{ producto.nombre }}</option>
+            </select>
+            <div *ngIf="formularioTransaccion.get('ProductoId')?.invalid && formularioTransaccion.get('ProductoId')?.touched" class="text-danger">
+                Producto es requerido
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="Cantidad" class="form-label">Cantidad</label>
+            <input type="number" id="Cantidad" formControlName="Cantidad" class="form-control">
+            <div *ngIf="formularioTransaccion.get('Cantidad')?.errors?.['required'] && formularioTransaccion.get('Cantidad')?.touched" class="text-danger">
+                Cantidad es requerida
+            </div>
+            <div *ngIf="formularioTransaccion.get('Cantidad')?.errors?.['min']" class="text-danger">
+                Cantidad debe ser mayor a 0
+            </div>
+            <div *ngIf="formularioTransaccion.get('Cantidad')?.errors?.['stockInsuficiente']" class="text-danger">
+                Stock insuficiente para realizar esta venta
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="PrecioUnitario" class="form-label">Precio Unitario</label>
+            <input type="number" id="PrecioUnitario" formControlName="PrecioUnitario" class="form-control">
+            <div *ngIf="formularioTransaccion.get('PrecioUnitario')?.errors?.['required'] && formularioTransaccion.get('PrecioUnitario')?.touched" class="text-danger">
+                Precio unitario es requerido
+            </div>
+            <div *ngIf="formularioTransaccion.get('PrecioUnitario')?.errors?.['min']" class="text-danger">
+                Precio unitario debe ser mayor a 0
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Precio Total</label>
+            <input type="text" class="form-control" [value]="calcularPrecioTotal() | currency" readonly>
+        </div>
+
+        <div class="mb-3">
+            <label for="Detalle" class="form-label">Detalle (opcional)</label>
+            <textarea id="Detalle" formControlName="Detalle" class="form-control" rows="3"></textarea>
+        </div>
+
+        <div class="d-flex justify-content-between">
+            <button type="button" class="btn btn-secondary" routerLink="/transacciones">Cancelar</button>
+            <button type="submit" class="btn btn-primary" [disabled]="formularioTransaccion.invalid">Guardar</button>
+        </div>
+    </form>
+</div>
