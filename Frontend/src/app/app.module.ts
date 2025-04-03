@@ -12,25 +12,29 @@ import { EditarProductoComponent } from './paginas/productos/editar-producto/edi
 import { ReactiveFormsModule } from '@angular/forms';
 import { AgregarTransaccionComponent } from './paginas/transacciones/agregar-transaccion/agregar-transaccion.component';
 import { EditarTransaccionComponent } from './paginas/transacciones/editar-transaccion/editar-transaccion.component';
+import { ListaTransaccionesComponent } from './componentes/lista-transacciones/lista-transacciones.component';
+import { TransaccionesComponent } from './paginas/transacciones/transacciones.component';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    ListaProductosComponent,
-    DetalleProductosComponent,
-    ProductosComponent,
-    AgregarProductoComponent,
-    EditarProductoComponent,
-    AgregarTransaccionComponent,
-    EditarTransaccionComponent
-  ],
-  imports: [
-    BrowserModule,
-      AppRoutingModule,
-      HttpClientModule,
-      ReactiveFormsModule
-  ],
-  providers: [],
-  bootstrap: [AppComponent]
+    declarations: [
+        AppComponent,
+        ListaProductosComponent,
+        DetalleProductosComponent,
+        ProductosComponent,
+        AgregarProductoComponent,
+        EditarProductoComponent,
+        AgregarTransaccionComponent,
+        EditarTransaccionComponent,
+        ListaTransaccionesComponent,
+        TransaccionesComponent
+    ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        HttpClientModule,
+        ReactiveFormsModule
+    ],
+    providers: [],
+    bootstrap: [AppComponent]
 })
 export class AppModule { }

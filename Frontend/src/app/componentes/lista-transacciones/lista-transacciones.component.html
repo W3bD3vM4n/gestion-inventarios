@@ -1,0 +1,53 @@
+<div class="p-4 space-y-4">
+    <!-- Navegación -->
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold">Transacciones</h1>
+        <div class="flex space-x-4">
+            <a routerLink="/productos" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600">
+                Productos
+            </a>
+            <a routerLink="/transacciones/agregar" class="bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600">
+                Agregar
+            </a>
+        </div>
+    </div>
+
+    <!-- Tabla Transacciones -->
+    <table class="min-w-full bg-white border border-gray-200 rounded-md shadow-md">
+        <thead class="bg-gray-100">
+            <tr>
+                <th class="px-6 py-3 text-left text-gray-600">ID</th>
+                <th class="px-6 py-3 text-left text-gray-600">Fecha</th>
+                <th class="px-6 py-3 text-left text-gray-600">Tipo</th>
+                <th class="px-6 py-3 text-left text-gray-600">Producto</th>
+                <th class="px-6 py-3 text-left text-gray-600">Cantidad</th>
+                <th class="px-6 py-3 text-left text-gray-600">Precio Unitario</th>
+                <th class="px-6 py-3 text-left text-gray-600">Precio Total</th>
+                <th class="px-6 py-3 text-left text-gray-600">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let transaccion of transacciones">
+                <td class="px-6 py-3">{{ transaccion.id }}</td>
+                <td class="px-6 py-3">{{ transaccion.fecha | date:'dd/MM/yyyy HH:mm' }}</td>
+                <!-- <td class="px-6 py-3">{{ obtenerNombreTipoTransaccion(transaccion.tipoTransaccionId</td> -->
+                <td class="px-6 py-3">{{ obtenerNombreTipoTransaccion(transaccion.tipo_transaccion</td>
+                <td class="px-6 py-3">{{ obtenerNombreProducto(transaccion.productoId) }}</td>
+                <td class="px-6 py-3">{{ transaccion.cantidad }}</td>
+                <td class="px-6 py-3">{{ transaccion.precioUnitario | currency }}</td>
+                <td class="px-6 py-3">{{ transaccion.precioTotal | currency }}</td>
+                <td class="px-6 py-3 flex space-x-2">
+                    <!-- Botón Eliminar -->
+                    <button (click)="eliminarTransaccion(transaccion.id)" class="bg-red-500 text-white py-1 px-3 rounded-md hover:bg-red-600">
+                        Eliminar
+                    </button>
+                </td>
+            </tr>
+            <tr *ngIf="transacciones.length === 0">
+                <td colspan="8" class="px-6 py-4 text-center text-gray-500">
+                    No hay transacciones registradas
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

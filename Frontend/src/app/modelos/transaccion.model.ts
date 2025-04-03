@@ -1,10 +1,11 @@
 export interface Transaccion {
     id: number;
     fecha: Date;
-    tipo_transaccion_id: number;
-    producto_id: number;
+    // tipoTransaccionId: number;
+    tipoTransaccion: string;
+    productoId: number;
     cantidad: number;
-    precio_unitario: number;
-    precio_total: number;
+    precioUnitario: number;
+    precioTotal: number;
     detalle?: string;
 }

@@ -44,7 +44,7 @@ export class EditarProductoComponent implements OnInit {
             console.error('Producto ID invalido');
             return;
         }
-        
+
         // Obtener los detalles del producto primero
         console.log("Obteniendo detalles del producto...");
         this.productoService.obtenerProductoPorId(this.productoId).subscribe({
@@ -65,7 +65,7 @@ export class EditarProductoComponent implements OnInit {
 
                         // If categoria_id is a number (ID reference)
                         const categoriaSeleccionada = this.categorias.find(cat =>
-                            cat.id === producto.categoria_id
+                            cat.id === producto.categoriaId
                         );
 
                         // If you need to display the selected ID for debugging
@@ -76,7 +76,7 @@ export class EditarProductoComponent implements OnInit {
                         this.formularioProducto.patchValue({
                             nombre: producto.nombre,
                             descripcion: producto.descripcion,
-                            categoria_id: producto.categoria_id, // Asignar el categoria_id aquí
+                            categoria_id: producto.categoriaId, // Asignar el categoria_id aquí
                             imagen: producto.imagen,
                             precio: producto.precio,
                             stock: producto.stock

@@ -15,26 +15,26 @@ export class TransaccionService {
     constructor(private http: HttpClient) { }
 
     obtenerTransacciones(): Observable<Transaccion[]> {
-        return this.http.get<Transaccion[]>(`${this.apiUrl}/Transacciones`);
+        return this.http.get<Transaccion[]>(`${this.apiUrl}/Transaccion`);
     }
 
     obtenerTransaccion(id: number): Observable<Transaccion> {
-        return this.http.get<Transaccion>(`${this.apiUrl}/Transacciones/${id}`);
+        return this.http.get<Transaccion>(`${this.apiUrl}/Transaccion/${id}`);
     }
 
     guardarTransaccion(transaccion: Transaccion): Observable<Transaccion> {
-        return this.http.post<Transaccion>(`${this.apiUrl}/Transacciones`, transaccion);
+        return this.http.post<Transaccion>(`${this.apiUrl}/Transaccion`, transaccion);
     }
 
     actualizarTransaccion(id: number, transaccion: Transaccion): Observable<any> {
-        return this.http.put(`${this.apiUrl}/Transacciones/${id}`, transaccion);
+        return this.http.put(`${this.apiUrl}/Transaccion/${id}`, transaccion);
     }
 
     eliminarTransaccion(id: number): Observable<any> {
-        return this.http.delete(`${this.apiUrl}/Transacciones/${id}`);
+        return this.http.delete(`${this.apiUrl}/Transaccion/${id}`);
     }
 
     obtenerTiposTransaccion(): Observable<TipoTransaccion[]> {
-        return this.http.get<TipoTransaccion[]>(`${this.apiUrl}/TiposTransaccion`);
+        return this.http.get<TipoTransaccion[]>(`${this.apiUrl}/Transaccion/TipoTransacciones`);
     }
 }
