@@ -1,67 +1,96 @@
-<div class="container mt-4">
-    <h2>Agregar Nueva Transacción</h2>
+<div class="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-md">
+    <h2 class="text-2xl font-semibold text-gray-700 mb-4">Agregar Transacción</h2>
 
-    <form [formGroup]="formularioTransaccion" (ngSubmit)="onSubmit()" class="mt-4">
-        <div class="mb-3">
-            <label for="TipoTransaccionId" class="form-label">Tipo de Transacción</label>
-            <select id="TipoTransaccionId" formControlName="TipoTransaccionId" class="form-select">
-                <option value="">Seleccionar tipo</option>
-                <option *ngFor="let tipo of tiposTransaccion" [value]="tipo.id">{{ tipo.tipo }}</option>
-            </select>
-            <div *ngIf="formularioTransaccion.get('TipoTransaccionId')?.invalid && formularioTransaccion.get('TipoTransaccionId')?.touched" class="text-danger">
-                Tipo de transacción es requerido
+    <form [formGroup]="formularioTransaccion" (ngSubmit)="onSubmit()">
+        <div class="grid grid-cols-2 gap-4">
+            <!-- Tipo de Transacción -->
+            <div>
+                <label for="tipoTransaccionId" class="block text-gray-600 font-medium">Tipo de Transacción:</label>
+                <select id="tipoTransaccionId" formControlName="tipoTransaccionId" required
+                        class="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option *ngFor="let tipo of tiposTransaccion" [value]="tipo.id">
+                        {{ tipo.tipo }}
+                    </option>
+                </select>
+                <div *ngIf="formularioTransaccion.get('tipoTransaccionId')?.invalid && formularioTransaccion.get('tipoTransaccionId')?.touched"
+                     class="text-sm text-red-500 mt-1">
+                    Tipo de transacción requerida
+                </div>
+            </div>
+
+            <!-- Producto -->
+            <div>
+                <label for="productoId" class="block text-gray-600 font-medium">Producto:</label>
+                <select id="productoId" formControlName="productoId" required
+                        class="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option *ngFor="let producto of productos" [value]="producto.id">
+                        {{ producto.nombre }}
+                    </option>
+                </select>
+                <div *ngIf="formularioTransaccion.get('productoId')?.invalid && formularioTransaccion.get('productoId')?.touched"
+                     class="text-sm text-red-500 mt-1">
+                    Producto requerido
+                </div>
+            </div>
+
+            <!-- Cantidad -->
+            <div>
+                <label for="cantidad" class="block text-gray-600 font-medium">Cantidad:</label>
+                <input type="number" id="cantidad" formControlName="cantidad" required
+                       class="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <div *ngIf="formularioTransaccion.get('cantidad')?.errors?.['required'] && formularioTransaccion.get('cantidad')?.touched"
+                     class="text-sm text-red-500 mt-1">
+                    Cantidad es requerida
+                </div>
+                <div *ngIf="formularioTransaccion.get('cantidad')?.errors?.['min']"
+                     class="text-sm text-red-500 mt-1">
+                    Cantidad debe ser mayor a 0
+                </div>
+                <div *ngIf="formularioTransaccion.get('cantidad')?.errors?.['stockInsuficiente']"
+                     class="text-sm text-red-500 mt-1">
+                    Stock insuficiente para realizar esta venta
+                </div>
+            </div>
+
+            <!-- Precio Unitario -->
+            <div>
+                <label for="precioUnitario" class="block text-gray-600 font-medium">Precio Unitario:</label>
+                <input type="number" id="precioUnitario" formControlName="precioUnitario" required
+                       class="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <div *ngIf="formularioTransaccion.get('precioUnitario')?.errors?.['required'] && formularioTransaccion.get('precioUnitario')?.touched"
+                     class="text-sm text-red-500 mt-1">
+                    Precio unitario requerido
+                </div>
+                <div *ngIf="formularioTransaccion.get('precioUnitario')?.errors?.['min']"
+                     class="text-sm text-red-500 mt-1">
+                    Precio unitario debe ser mayor a 0
+                </div>
+            </div>
+
+            <!-- Precio Total -->
+            <div class="col-span-2">
+                <label class="block text-gray-600 font-medium">Precio Total:</label>
+                <input type="text" class="w-full border rounded-md px-3 py-2 bg-gray-100" [value]="calcularPrecioTotal() | currency" readonly>
+            </div>
+
+            <!-- Detalle -->
+            <div class="col-span-2">
+                <label for="detalle" class="block text-gray-600 font-medium">Detalle (opcional):</label>
+                <textarea id="detalle" formControlName="detalle"
+                          class="w-full border rounded-md px-3 py-2 h-[60px] overflow-y-auto resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
             </div>
         </div>
 
-        <div class="mb-3">
-            <label for="ProductoId" class="form-label">Producto</label>
-            <select id="ProductoId" formControlName="ProductoId" class="form-select">
-                <option value="">Seleccionar producto</option>
-                <option *ngFor="let producto of productos" [value]="producto.id">{{ producto.nombre }}</option>
-            </select>
-            <div *ngIf="formularioTransaccion.get('ProductoId')?.invalid && formularioTransaccion.get('ProductoId')?.touched" class="text-danger">
-                Producto es requerido
-            </div>
-        </div>
-
-        <div class="mb-3">
-            <label for="Cantidad" class="form-label">Cantidad</label>
-            <input type="number" id="Cantidad" formControlName="Cantidad" class="form-control">
-            <div *ngIf="formularioTransaccion.get('Cantidad')?.errors?.['required'] && formularioTransaccion.get('Cantidad')?.touched" class="text-danger">
-                Cantidad es requerida
-            </div>
-            <div *ngIf="formularioTransaccion.get('Cantidad')?.errors?.['min']" class="text-danger">
-                Cantidad debe ser mayor a 0
-            </div>
-            <div *ngIf="formularioTransaccion.get('Cantidad')?.errors?.['stockInsuficiente']" class="text-danger">
-                Stock insuficiente para realizar esta venta
-            </div>
-        </div>
-
-        <div class="mb-3">
-            <label for="PrecioUnitario" class="form-label">Precio Unitario</label>
-            <input type="number" id="PrecioUnitario" formControlName="PrecioUnitario" class="form-control">
-            <div *ngIf="formularioTransaccion.get('PrecioUnitario')?.errors?.['required'] && formularioTransaccion.get('PrecioUnitario')?.touched" class="text-danger">
-                Precio unitario es requerido
-            </div>
-            <div *ngIf="formularioTransaccion.get('PrecioUnitario')?.errors?.['min']" class="text-danger">
-                Precio unitario debe ser mayor a 0
-            </div>
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Precio Total</label>
-            <input type="text" class="form-control" [value]="calcularPrecioTotal() | currency" readonly>
-        </div>
-
-        <div class="mb-3">
-            <label for="Detalle" class="form-label">Detalle (opcional)</label>
-            <textarea id="Detalle" formControlName="Detalle" class="form-control" rows="3"></textarea>
-        </div>
-
-        <div class="d-flex justify-content-between">
-            <button type="button" class="btn btn-secondary" routerLink="/transacciones">Cancelar</button>
-            <button type="submit" class="btn btn-primary" [disabled]="formularioTransaccion.invalid">Guardar</button>
+        <!-- Botones -->
+        <div class="mt-6 flex justify-between">
+            <button type="button" routerLink="/transacciones"
+                    class="bg-gray-500 text-white py-2 px-4 rounded-md hover:bg-gray-600">
+                Cancelar
+            </button>
+            <button type="submit" [disabled]="formularioTransaccion.invalid"
+                    class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 disabled:opacity-50">
+                Guardar
+            </button>
         </div>
     </form>
 </div>

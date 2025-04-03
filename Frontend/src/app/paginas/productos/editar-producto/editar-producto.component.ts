@@ -30,7 +30,7 @@ export class EditarProductoComponent implements OnInit {
         this.formularioProducto = this.generarFormulario.group({
             nombre: ['', Validators.required],
             descripcion: [''],
-            categoria_id: ['', Validators.required],
+            categoriaId: ['', Validators.required],
             imagen: [''],
             precio: ['', [Validators.required, Validators.min(0)]],
             stock: ['', [Validators.required, Validators.min(1)]]
@@ -76,7 +76,7 @@ export class EditarProductoComponent implements OnInit {
                         this.formularioProducto.patchValue({
                             nombre: producto.nombre,
                             descripcion: producto.descripcion,
-                            categoria_id: producto.categoriaId, // Asignar el categoria_id aquí
+                            categoriaId: producto.categoriaId, // Asignar el categoriaId aquí
                             imagen: producto.imagen,
                             precio: producto.precio,
                             stock: producto.stock

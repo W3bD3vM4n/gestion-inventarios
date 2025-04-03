@@ -3,10 +3,10 @@
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold">Transacciones</h1>
         <div class="flex space-x-4">
-            <a routerLink="/productos" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600">
+            <a [routerLink]="['/productos']" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600">
                 Productos
             </a>
-            <a routerLink="/transacciones/agregar" class="bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600">
+            <a [routerLink]="['/agregar-transaccion']" class="bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600">
                 Agregar
             </a>
         </div>
@@ -29,14 +29,17 @@
         <tbody>
             <tr *ngFor="let transaccion of transacciones">
                 <td class="px-6 py-3">{{ transaccion.id }}</td>
-                <td class="px-6 py-3">{{ transaccion.fecha | date:'dd/MM/yyyy HH:mm' }}</td>
-                <!-- <td class="px-6 py-3">{{ obtenerNombreTipoTransaccion(transaccion.tipoTransaccionId</td> -->
-                <td class="px-6 py-3">{{ obtenerNombreTipoTransaccion(transaccion.tipo_transaccion</td>
+                <td class="px-6 py-3">{{ transaccion.fecha | date:'yyyy/MM/dd' }}</td>
+                <td class="px-6 py-3">{{ obtenerNombreTipoTransaccion(transaccion.tipoTransaccionId) }}</td>
+                <!-- <td class="px-6 py-3">{{ obtenerNombreTipoTransaccion(transaccion.tipoTransaccion) }}</td> -->
                 <td class="px-6 py-3">{{ obtenerNombreProducto(transaccion.productoId) }}</td>
                 <td class="px-6 py-3">{{ transaccion.cantidad }}</td>
                 <td class="px-6 py-3">{{ transaccion.precioUnitario | currency }}</td>
                 <td class="px-6 py-3">{{ transaccion.precioTotal | currency }}</td>
                 <td class="px-6 py-3 flex space-x-2">
+                    <a [routerLink]="['/editar-transaccion', transaccion.id]" class="bg-blue-500 text-white py-1 px-3 rounded-md hover:bg-blue-600">
+                        Editar
+                    </a>
                     <!-- Botón Eliminar -->
                     <button (click)="eliminarTransaccion(transaccion.id)" class="bg-red-500 text-white py-1 px-3 rounded-md hover:bg-red-600">
                         Eliminar

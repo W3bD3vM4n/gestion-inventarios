@@ -24,7 +24,7 @@ export class AgregarProductoComponent implements OnInit {
         this.formularioProducto = this.generarFormulario.group({
             nombre: ['', Validators.required],
             descripcion: [''],
-            categoria_id: ['', Validators.required],
+            categoriaId: ['', Validators.required],
             imagen: [''],
             precio: ['', [Validators.required, Validators.min(0)]],
             stock: ['', [Validators.required, Validators.min(1)]]

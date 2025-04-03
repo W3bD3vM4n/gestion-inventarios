@@ -31,19 +31,19 @@ export class AgregarTransaccionComponent implements OnInit {
         this.cargarTiposTransaccion();
 
         // Agrega listeners para cambios en producto, cantidad y tipo de transacción
-        this.formularioTransaccion.get('ProductoId')?.valueChanges.subscribe(() => this.verificarStock());
-        this.formularioTransaccion.get('Cantidad')?.valueChanges.subscribe(() => this.verificarStock());
-        this.formularioTransaccion.get('TipoTransaccionId')?.valueChanges.subscribe(() => this.verificarStock());
-        this.formularioTransaccion.get('ProductoId')?.valueChanges.subscribe(() => this.actualizarPrecioUnitario());
+        this.formularioTransaccion.get('tipoTransaccionId')?.valueChanges.subscribe(() => this.verificarStock());
+        this.formularioTransaccion.get('productoId')?.valueChanges.subscribe(() => this.verificarStock());
+        this.formularioTransaccion.get('productoId')?.valueChanges.subscribe(() => this.actualizarPrecioUnitario());
+        this.formularioTransaccion.get('cantidad')?.valueChanges.subscribe(() => this.verificarStock());
     }
 
     iniciarFormulario(): void {
         this.formularioTransaccion = this.generarFormulario.group({
-            ProductoId: ['', Validators.required],
-            TipoTransaccionId: ['', Validators.required],
-            Cantidad: ['', [Validators.required, Validators.min(1)]],
-            PrecioUnitario: ['', [Validators.required, Validators.min(0.01)]],
-            Detalle: ['']
+            tipoTransaccionId: ['', Validators.required],
+            productoId: ['', Validators.required],
+            cantidad: ['', [Validators.required, Validators.min(1)]],
+            precioUnitario: ['', [Validators.required, Validators.min(0.01)]],
+            detalle: ['']
         });
     }
 
@@ -72,9 +72,9 @@ export class AgregarTransaccionComponent implements OnInit {
     }
 
     verificarStock(): void {
-        const productoId = this.formularioTransaccion.get('ProductoId')?.value;
-        const cantidad = this.formularioTransaccion.get('Cantidad')?.value;
-        const tipoId = this.formularioTransaccion.get('TipoTransaccionId')?.value;
+        const productoId = this.formularioTransaccion.get('productoId')?.value;
+        const cantidad = this.formularioTransaccion.get('cantidad')?.value;
+        const tipoId = this.formularioTransaccion.get('tipoTransaccionId')?.value;
 
         if (!productoId || !cantidad || !tipoId) return;
 
@@ -83,24 +83,24 @@ export class AgregarTransaccionComponent implements OnInit {
             const productoSeleccionado = this.productos.find(p => p.id === productoId);
 
             if (productoSeleccionado && productoSeleccionado.stock < cantidad) {
-                this.formularioTransaccion.get('Cantidad')?.setErrors({ stockInsuficiente: true });
+                this.formularioTransaccion.get('cantidad')?.setErrors({ stockInsuficiente: true });
             }
         }
     }
 
     actualizarPrecioUnitario(): void {
-        const productoId = this.formularioTransaccion.get('ProductoId')?.value;
+        const productoId = this.formularioTransaccion.get('productoId')?.value;
         if (!productoId) return;
 
         const productoSeleccionado = this.productos.find(p => p.id === productoId);
         if (productoSeleccionado) {
-            this.formularioTransaccion.get('PrecioUnitario')?.setValue(productoSeleccionado.precio);
+            this.formularioTransaccion.get('precioUnitario')?.setValue(productoSeleccionado.precio);
         }
     }
 
     calcularPrecioTotal(): number {
-        const cantidad = this.formularioTransaccion.get('Cantidad')?.value || 0;
-        const precioUnitario = this.formularioTransaccion.get('PrecioUnitario')?.value || 0;
+        const cantidad = this.formularioTransaccion.get('cantidad')?.value || 0;
+        const precioUnitario = this.formularioTransaccion.get('precioUnitario')?.value || 0;
         return cantidad * precioUnitario;
     }
 
@@ -109,8 +109,8 @@ export class AgregarTransaccionComponent implements OnInit {
 
         const transaccion = {
             ...this.formularioTransaccion.value,
-            Fecha: new Date(),
-            PrecioTotal: this.calcularPrecioTotal()
+            fecha: new Date(),
+            precioTotal: this.calcularPrecioTotal()
         };
 
         this.transaccionService.guardarTransaccion(transaccion).subscribe({
