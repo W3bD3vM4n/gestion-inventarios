@@ -1,0 +1,26 @@
+<header class="bg-slate-900 p-4">
+    <div class="grid grid-cols-1 grid-rows-[auto_auto_auto] lg:grid-cols-[20%_60%_20%] lg:grid-rows-2 mx-8">
+
+        <!-- Izquierda: Logo de la Página -->
+        <div class="col-start-1 row-start-1 row-end-2 lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-3 flex items-center justify-center w-full">
+            <!-- Logo -->
+            <a href="/" class="flex items-center">
+              <img src="/assets/images/supply.png" alt="Logo" class="h-16 sm:h-12 mr-4">
+                <!-- Titulo -->
+                <span class="text-2xl font-mono font-bold uppercase text-white leading-none mr-2">Gestion de Inventarios</span>
+            </a>
+        </div>
+
+        <!-- Centro: Elementos de Navegación -->
+        <div class="col-start-1 row-start-2 row-end-3 text-center lg:col-start-2 lg:row-start-2 lg:row-end-4">
+            <div class="hidden lg:block">
+                <nav class="w-full flex justify-evenly items-center">
+
+                    <a [routerLink]="['/productos']" class="font-semibold text-gray-500 hover:underline hover:text-white">Productos</a>
+                    <a [routerLink]="['/transacciones']" class="font-semibold text-gray-500 hover:underline hover:text-white">Transacciones</a>
+                </nav>
+            </div>
+        </div>
+
+    </div>
+</header>

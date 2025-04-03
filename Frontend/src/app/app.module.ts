@@ -14,6 +14,7 @@ import { AgregarTransaccionComponent } from './paginas/transacciones/agregar-tra
 import { EditarTransaccionComponent } from './paginas/transacciones/editar-transaccion/editar-transaccion.component';
 import { ListaTransaccionesComponent } from './componentes/lista-transacciones/lista-transacciones.component';
 import { TransaccionesComponent } from './paginas/transacciones/transacciones.component';
+import { HeaderComponent } from './componentes/header/header.component';
 
 @NgModule({
     declarations: [
@@ -26,7 +27,8 @@ import { TransaccionesComponent } from './paginas/transacciones/transacciones.co
         AgregarTransaccionComponent,
         EditarTransaccionComponent,
         ListaTransaccionesComponent,
-        TransaccionesComponent
+        TransaccionesComponent,
+        HeaderComponent
     ],
     imports: [
         BrowserModule,

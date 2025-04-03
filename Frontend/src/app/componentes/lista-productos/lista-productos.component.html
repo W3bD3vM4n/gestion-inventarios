@@ -1,15 +1,11 @@
 <div class="p-4 space-y-4">
     <!-- Navegación -->
-    <div class="flex justify-between items-center mb-6">
-        <h1 class="text-2xl font-bold">Productos</h1>
-        <div class="flex space-x-4">
-            <a [routerLink]="['/transacciones']" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600">
-            Transacciones
-            </a>
-            <!-- Boton Agregar -->
-            <a [routerLink]="['/agregar-producto']" class="bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600">
+    <div class="flex flex-col mb-6">
+        <h1 class="text-xl font-bold mb-4 uppercase">Productos</h1>
+        <div>
+          <a [routerLink]="['/agregar-producto']" class="bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600">
             Agregar
-            </a>
+          </a>
         </div>
     </div>
 
