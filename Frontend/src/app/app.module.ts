@@ -15,6 +15,7 @@ import { EditarTransaccionComponent } from './paginas/transacciones/editar-trans
 import { ListaTransaccionesComponent } from './componentes/lista-transacciones/lista-transacciones.component';
 import { TransaccionesComponent } from './paginas/transacciones/transacciones.component';
 import { HeaderComponent } from './componentes/header/header.component';
+import { HomeComponent } from './componentes/home/home.component';
 
 @NgModule({
     declarations: [
@@ -28,7 +29,8 @@ import { HeaderComponent } from './componentes/header/header.component';
         EditarTransaccionComponent,
         ListaTransaccionesComponent,
         TransaccionesComponent,
-        HeaderComponent
+        HeaderComponent,
+        HomeComponent
     ],
     imports: [
         BrowserModule,

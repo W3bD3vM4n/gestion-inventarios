@@ -6,6 +6,7 @@ import { EditarProductoComponent } from './paginas/productos/editar-producto/edi
 import { TransaccionesComponent } from './paginas/transacciones/transacciones.component';
 import { AgregarTransaccionComponent } from './paginas/transacciones/agregar-transaccion/agregar-transaccion.component';
 import { EditarTransaccionComponent } from './paginas/transacciones/editar-transaccion/editar-transaccion.component';
+import { HomeComponent } from './componentes/home/home.component';
 
 const routes: Routes = [
     { path: 'productos', component: ProductosComponent },
@@ -14,7 +15,8 @@ const routes: Routes = [
     { path: 'transacciones', component: TransaccionesComponent },
     { path: 'agregar-transaccion', component: AgregarTransaccionComponent },
     { path: 'editar-transaccion/:id', component: EditarTransaccionComponent },
-    { path: '', redirectTo: '/productos', pathMatch: 'full' },
+    { path: '', component: HomeComponent }, // // Establece ruta predeterminada
+    { path: '**', redirectTo: '/' }, // Redirige a Home para rutas no válidas
 ];
 
 @NgModule({
