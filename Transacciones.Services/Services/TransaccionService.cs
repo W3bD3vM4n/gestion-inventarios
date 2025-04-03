@@ -86,6 +86,18 @@ namespace Transacciones.Services.Services
             }
         }
 
+        public List<TipoTransaccion> ObtenerTipoTransacciones()
+        {
+            try
+            {
+                return _transaccionDbContext.TipoTransacciones.ToList();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
 
         public async Task<Transaccion> CrearTransaccionAsync(TransaccionCreateRequest peticion)
         {

@@ -91,7 +91,7 @@ namespace Productos.API.Controllers
             return Ok(_productoService.ActualizarProducto(peticion));
         }
 
-        [HttpPut("stock")]
+        [HttpPut("Stock")]
         public async Task<IActionResult> ActualizarStock([FromBody] StockUpdateRequest peticion)
         {
             if (!ModelState.IsValid)

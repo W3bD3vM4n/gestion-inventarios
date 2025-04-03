@@ -15,19 +15,19 @@ namespace Transacciones.Services.Dto
         [JsonPropertyName("fecha")]
         public DateTime Fecha { get; set; }
 
-        [JsonPropertyName("tipo_transaccion_id")]
+        [JsonPropertyName("tipoTransaccionId")]
         public int TipoTransaccionId { get; set; }
 
-        [JsonPropertyName("producto_id")]
+        [JsonPropertyName("productoId")]
         public int ProductoId { get; set; }
 
         [JsonPropertyName("cantidad")]
         public int Cantidad { get; set; }
 
-        [JsonPropertyName("precio_unitario")]
+        [JsonPropertyName("precioUnitario")]
         public decimal PrecioUnitario { get; set; }
 
-        [JsonPropertyName("precio_total")]
+        [JsonPropertyName("precioTotal")]
         public decimal PrecioTotal { get; set; }
 
         [JsonPropertyName("detalle")]

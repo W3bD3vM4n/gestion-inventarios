@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace Productos.Data.Models;
+﻿namespace Productos.Data.Models;
 
 public partial class Producto
 {

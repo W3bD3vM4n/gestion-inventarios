@@ -55,6 +55,20 @@ namespace Transacciones.API.Controllers
             });
         }
 
+        [HttpGet("TipoTransacciones")]
+        public IActionResult ObtenerTipo()
+        {
+            try
+            {
+                var tipos = _transaccionService.ObtenerTipoTransacciones();
+                return Ok(tipos);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
 
         [HttpPost]
         public async Task<IActionResult> Crear([FromBody] TransaccionCreateRequest peticion)
