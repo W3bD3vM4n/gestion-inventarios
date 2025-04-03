@@ -70,8 +70,12 @@
             </div>
         </div>
 
-        <!-- Botón Guardar -->
-        <div class="mt-6">
+        <!-- Botones -->
+        <div class="mt-6 flex justify-end gap-4">
+            <button type="button" [routerLink]="['/productos']"
+                    class="bg-gray-500 text-white py-2 px-4 rounded-md hover:bg-gray-600">
+                Cancelar
+            </button>
             <button type="submit" [disabled]="formularioProducto.invalid"
                     class="bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 disabled:opacity-50">
                 Guardar
