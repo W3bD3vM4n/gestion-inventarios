@@ -85,10 +85,26 @@ namespace Productos.API.Controllers
         }
 
 
-        [HttpPut]
-        public ActionResult Actualizar(ProductoUpdateRequest peticion)
+        [HttpPut("{id}")]
+        public ActionResult Actualizar(int id, [FromBody] ProductoUpdateRequest peticion)
         {
-            return Ok(_productoService.ActualizarProducto(peticion));
+            // Optional: Check if the id in the URL matches the id in the body, if peticion has an Id property
+            if (id != peticion.Id)
+            {
+                return BadRequest("ID mismatch between URL and request body.");
+            }
+
+            // Assuming _productoService.ActualizarProducto uses the ID within the 'peticion' object
+            // If it needs the ID passed separately, you might need to adjust the service call too.
+            var productoActualizado = _productoService.ActualizarProducto(peticion); // Make sure 'peticion' contains the ID or adjust service
+
+            if (productoActualizado == null)
+            {
+                // Or handle based on how your service indicates failure/not found
+                return NotFound($"Producto con ID {id} no encontrado o no se pudo actualizar.");
+            }
+
+            return Ok(productoActualizado);
         }
 
         [HttpPut("Stock")]
