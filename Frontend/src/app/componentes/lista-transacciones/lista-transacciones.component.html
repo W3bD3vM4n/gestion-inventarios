@@ -27,8 +27,7 @@
             <tr *ngFor="let transaccion of transacciones">
                 <td class="px-6 py-3">{{ transaccion.id }}</td>
                 <td class="px-6 py-3">{{ transaccion.fecha | date:'yyyy/MM/dd' }}</td>
-                <td class="px-6 py-3">{{ obtenerNombreTipoTransaccion(transaccion.tipoTransaccionId) }}</td>
-                <!-- <td class="px-6 py-3">{{ obtenerNombreTipoTransaccion(transaccion.tipoTransaccion) }}</td> -->
+                <td class="px-6 py-3">{{ transaccion.tipoTransaccion }}</td>
                 <td class="px-6 py-3">{{ obtenerNombreProducto(transaccion.productoId) }}</td>
                 <td class="px-6 py-3">{{ transaccion.cantidad }}</td>
                 <td class="px-6 py-3">{{ transaccion.precioUnitario | currency }}</td>

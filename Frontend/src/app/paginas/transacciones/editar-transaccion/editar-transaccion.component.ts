@@ -64,7 +64,7 @@ export class EditarTransaccionComponent implements OnInit {
 
                 // Ahora actualizamos el formulario con los datos obtenidos
                 this.formularioTransaccion.patchValue({
-                    tipoTransaccionId: transaccion.tipoTransaccionId,
+                    tipoTransaccionId: transaccion.tipoTransaccion,
                     productoId: transaccion.productoId,
                     cantidad: transaccion.cantidad,
                     precioUnitario: transaccion.precioUnitario,

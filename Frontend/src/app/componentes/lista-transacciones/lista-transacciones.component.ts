@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Transaccion } from '../../modelos/transaccion.model';
 import { TransaccionService } from '../../servicios/transaccion.service';
 import { ProductoService } from '../../servicios/producto.service';
+import { forkJoin } from 'rxjs';
 
 @Component({
     selector: 'app-lista-transacciones',
@@ -12,7 +13,6 @@ import { ProductoService } from '../../servicios/producto.service';
 export class ListaTransaccionesComponent implements OnInit {
     transacciones: Transaccion[] = [];
     nombreProductos: { [key: number]: string } = {};
-    nombreTipos: { [key: number]: string } = {};
 
     constructor(
         private transaccionService: TransaccionService,
@@ -20,45 +20,35 @@ export class ListaTransaccionesComponent implements OnInit {
     ) { }
 
     ngOnInit() {
-        this.cargarTransacciones();
-        this.cargarProductos();
-        this.cargarTiposTransaccion();
-    }
+        // Carga los datos antes de renderizar la tabla
+        forkJoin({
+            transacciones: this.transaccionService.obtenerTransacciones(),
+            productos: this.productoService.obtenerProductos()
+        }).subscribe({
+            next: (result) => {
+                // Llenar el mapa de nombres de productos
+                if (Array.isArray(result.productos)) {
+                    result.productos.forEach(producto => {
+                        if (producto && producto.hasOwnProperty('id') && producto.hasOwnProperty('nombre')) {
+                            this.nombreProductos[producto.id] = producto.nombre;
+                        } else {
+                            console.warn("Omisión de producto debido a propiedades faltantes:", producto);
+                        }
+                    });
+                } else {
+                    console.error("'result.productos' NO es un array.");
+                }
 
-    cargarTransacciones() {
-        this.transaccionService.obtenerTransacciones().subscribe({
-            next: (data) => {
-                this.transacciones = data;
+                // Asignar transacciones
+                this.transacciones = result.transacciones;
+
+                console.log("Datos cargados exitosamente!");
+                console.log("Mapa de Productos (después del procesamiento):", this.nombreProductos);
+
             },
             error: (error) => {
-                console.error('Error al cargar transacciones:', error);
-                alert('No se pudieron cargar las transacciones');
-            }
-        });
-    }
-
-    cargarProductos() {
-        this.productoService.obtenerProductos().subscribe({
-            next: (productos) => {
-                productos.forEach(producto => {
-                    this.nombreProductos[producto.id] = producto.nombre;
-                });
-            },
-            error: (error) => {
-                console.error('Error al cargar productos:', error);
-            }
-        });
-    }
-
-    cargarTiposTransaccion() {
-        this.transaccionService.obtenerTiposTransaccion().subscribe({
-            next: (tipos) => {
-                tipos.forEach(tipo => {
-                    this.nombreTipos[tipo.id] = tipo.tipo;
-                });
-            },
-            error: (error) => {
-                console.error('Error al cargar tipos de transacción:', error);
+                console.error('Error al cargar los datos:', error);
+                alert('No se pudo cargar los datos de la lista');
             }
         });
     }
@@ -84,9 +74,5 @@ export class ListaTransaccionesComponent implements OnInit {
 
     obtenerNombreProducto(productoId: number): string {
         return this.nombreProductos[productoId] || 'Producto desconocido';
-    }
-
-    obtenerNombreTipoTransaccion(tipoId: number): string {
-        return this.nombreTipos[tipoId] || 'Tipo desconocido';
     }
 }
