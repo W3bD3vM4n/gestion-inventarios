@@ -5,7 +5,7 @@
         <div class="grid grid-cols-2 gap-4">
             <!-- Tipo de Transacción -->
             <div>
-                <label for="tipoTransaccionId" class="block text-gray-600 font-medium">Tipo de Transacción:</label>
+                <label for="tipoTransaccionId" class="block text-gray-600 font-medium">Tipo:</label>
                 <select id="tipoTransaccionId" formControlName="tipoTransaccionId" required
                         class="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <option *ngFor="let tipo of tiposTransaccion" [value]="tipo.id">

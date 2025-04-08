@@ -30,7 +30,7 @@ namespace Productos.Services.Services
                         Id = producto.Id,
                         Nombre = producto.Nombre,
                         Descripcion = producto.Descripcion,
-                        Categoria = producto.Categoria != null ? producto.Categoria.Nombre : "Sin Categoría",
+                        Categoria = producto.Categoria.Nombre,
                         Imagen = producto.Imagen,
                         Precio = producto.Precio,
                         Stock = producto.Stock

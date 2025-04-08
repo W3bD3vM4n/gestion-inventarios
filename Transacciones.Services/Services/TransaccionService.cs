@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
-using System.Net.Http;
 using System.Text;
 using Transacciones.Data.Models;
 using Transacciones.Services.Dto;
