@@ -13,6 +13,9 @@ namespace Productos.Services.Dto
         [JsonPropertyName("descripcion")]
         public string Descripcion { get; set; }
 
+        [JsonPropertyName("categoriaId")]
+        public int CategoriaId { get; set; }
+
         [JsonPropertyName("categoria")]
         public string Categoria { get; set; }
 
