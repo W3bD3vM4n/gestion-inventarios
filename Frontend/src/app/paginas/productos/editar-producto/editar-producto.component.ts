@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
-import { Router } from '@angular/router';
-import { ProductoService } from '../../../servicios/producto.service';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Categoria } from '../../../modelos/categoria.model';
+import { ProductoService } from '../../../servicios/producto.service';
 
 @Component({
   selector: 'app-editar-producto',
@@ -24,7 +23,7 @@ export class EditarProductoComponent implements OnInit {
     ) { }
 
     ngOnInit(): void {
-        // Inicializa formularioProducto como vacío
+        // 1) Inicializa formularioProducto como vacío
         this.formularioProducto = this.generarFormulario.group({
             nombre: ['', Validators.required],
             descripcion: [''],
@@ -34,7 +33,7 @@ export class EditarProductoComponent implements OnInit {
             stock: ['', [Validators.required, Validators.min(1)]]
         });
 
-        // Obtiene el producto ID de la ruta
+        // 2) Obtiene el producto ID de la ruta
         this.productoId = Number(this.ruta.snapshot.paramMap.get('id'));
 
         if (!this.productoId) {
@@ -43,7 +42,7 @@ export class EditarProductoComponent implements OnInit {
             return;
         }
 
-        // Obtiene primero los detalles del producto
+        // 3) Obtiene primero los "detalles del producto"
         this.productoService.obtenerProductoPorId(this.productoId).subscribe({
             next: (producto) => {
                 const productData = producto as any;
@@ -53,12 +52,12 @@ export class EditarProductoComponent implements OnInit {
                     return;
                 }
 
-                // Obtiene las categorías después de obtener el producto
+                // 4) Obtiene la "lista de categorías" después de obtener el producto
                 this.productoService.obtenerCategorias().subscribe({
                     next: (categorias) => {
-                        this.categorias = categorias;
+                        this.categorias = categorias; // asigna categorias
 
-                        // Parchea el formulario DESPUÉS de encontrar el ID de categoría correcto
+                        // 5) Parchea el formulario DESPUÉS de encontrar el ID de categoría correcto
                         this.formularioProducto.patchValue({
                             nombre: productData.nombre,
                             descripcion: productData.descripcion,

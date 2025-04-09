@@ -10,6 +10,9 @@ namespace Transacciones.Services.Dto
         [JsonPropertyName("fecha")]
         public DateTime Fecha { get; set; }
 
+        [JsonPropertyName("tipoTransaccionId")]
+        public int TipoTransaccionId { get; set; }
+
         [JsonPropertyName("tipoTransaccion")]
         public string TipoTransaccion { get; set; }
 

@@ -41,6 +41,7 @@ namespace Transacciones.Services.Services
                     transaccionResponses.Add(new TransaccionResponse() {
                         Id = transaccion.Id,
                         Fecha = transaccion.Fecha,
+                        TipoTransaccionId = transaccion.TipoTransaccionId,
                         TipoTransaccion = transaccion.TipoTransaccion.Tipo,
                         ProductoId = transaccion.ProductoId,
                         Cantidad = transaccion.Cantidad,
@@ -69,6 +70,7 @@ namespace Transacciones.Services.Services
                 {
                     Id = transaccion.Id,
                     Fecha = transaccion.Fecha,
+                    TipoTransaccionId = transaccion.TipoTransaccionId,
                     TipoTransaccion = transaccion.TipoTransaccion.Tipo,
                     ProductoId = transaccion.ProductoId,
                     Cantidad = transaccion.Cantidad,

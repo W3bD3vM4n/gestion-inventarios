@@ -8,12 +8,10 @@ namespace Transacciones.API.Controllers
     [Route("api/[controller]")]
     public class TransaccionController : ControllerBase
     {
-        private readonly IProductoService _productoService;
         private readonly TransaccionService _transaccionService;
 
         public TransaccionController(IProductoService productoService, TransaccionService transaccionService)
         {
-            _productoService = productoService;
             _transaccionService = transaccionService;
         }
 
@@ -32,7 +30,7 @@ namespace Transacciones.API.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> ObtenerPorId(int id)
+        public IActionResult ObtenerPorId(int id)
         {
             var transaccion = _transaccionService.ObtenerTransaccionPorId(id);
 
@@ -41,18 +39,7 @@ namespace Transacciones.API.Controllers
                 return NotFound();
             }
 
-            // Obtener detalles de ProductosService mediante una llamada HTTP
-            var producto = await _productoService.ObtenerPorIdAsync(transaccion.ProductoId);
-
-            return Ok(new
-            {
-                transaccion.Id,
-                transaccion.Fecha,
-                TipoTransaccion = transaccion.TipoTransaccion,
-                Producto = producto,
-                transaccion.Cantidad,
-                transaccion.PrecioTotal
-            });
+            return Ok(transaccion);
         }
 
         [HttpGet("TipoTransacciones")]
