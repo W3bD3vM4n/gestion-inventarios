@@ -14,52 +14,88 @@ namespace Productos.Services.Services
             _productoDbContext = dbContext;
         }
 
-
-        public List<ProductoResponse> ObtenerTodosLosProductos()
+        
+        public async Task<List<ProductoResponse>> ObtenerTodosLosProductosAsync(
+            string? nombreFilter = null,
+            int? categoriaIdFilter = null,
+            decimal? precioMinFilter = null,
+            decimal? precioMaxFilter = null) // Agrega más filtros de ser necesario
         {
             try
             {
-                var productos = _productoDbContext.Productos.ToList();
+                // Empieza con IQueryable para crear busquedas dinámicas
+                var query = _productoDbContext.Productos
+                                            .Include(p => p.Categoria) // Carga pronta de Categoria
+                                            .AsQueryable();
 
-                List<ProductoResponse> productoResponses = new List<ProductoResponse>();
-
-                foreach (var producto in productos)
+                // Aplica filtros condicionalmente
+                if (!string.IsNullOrWhiteSpace(nombreFilter))
                 {
-                    productoResponses.Add(new ProductoResponse()
-                    {
-                        Id = producto.Id,
-                        Nombre = producto.Nombre,
-                        Descripcion = producto.Descripcion,
-                        CategoriaId = producto.CategoriaId,
-                        Categoria = producto.Categoria.Nombre,
-                        Imagen = producto.Imagen,
-                        Precio = producto.Precio,
-                        Stock = producto.Stock
-                    });
+                    query = query.Where(p => p.Nombre.Contains(nombreFilter));
                 }
+
+                if (categoriaIdFilter.HasValue)
+                {
+                    query = query.Where(p => p.CategoriaId == categoriaIdFilter.Value);
+                }
+
+                if (precioMinFilter.HasValue)
+                {
+                    query = query.Where(p => p.Precio >= precioMinFilter.Value);
+                }
+
+                if (precioMaxFilter.HasValue)
+                {
+                    query = query.Where(p => p.Precio <= precioMaxFilter.Value);
+                }
+
+                // Ejecuta la busqueda DESPUES de aplicar los filtros
+                var productos = await query.ToListAsync();
+
+                // Mapea a response DTO (Considera usar AutoMapper o Select para mayor eficiencia)
+                var productoResponses = productos.Select(producto => new ProductoResponse()
+                {
+                    Id = producto.Id,
+                    Nombre = producto.Nombre,
+                    Descripcion = producto.Descripcion,
+                    CategoriaId = producto.CategoriaId,
+                    Categoria = producto.Categoria?.Nombre, // Comprueba null por seguridad
+                    Imagen = producto.Imagen,
+                    Precio = producto.Precio,
+                    Stock = producto.Stock
+                }).ToList();
 
                 return productoResponses;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine($"Error obteniendo productos: {ex.Message}");
                 throw;
             }
         }
 
-        public ProductoResponse ObtenerProductoPorId(int id)
+
+        public async Task<ProductoResponse?> ObtenerProductoPorIdAsync(int id)
         {
             try
             {
-                var producto = _productoDbContext.Productos
-                    .FirstOrDefault(x => x.Id == id);
+                var producto = await _productoDbContext.Productos
+                    .Include(p => p.Categoria) // Incluye la información de Categoria
+                    .FirstOrDefaultAsync(x => x.Id == id);
 
+                if (producto == null)
+                {
+                    return null; // Regresa null si no lo encuentra
+                }
+
+                // Mapea a response DTO
                 var productoResponse = new ProductoResponse()
                 {
                     Id = producto.Id,
                     Nombre = producto.Nombre,
                     Descripcion = producto.Descripcion,
                     CategoriaId = producto.CategoriaId,
-                    Categoria = producto.Categoria.Nombre,
+                    Categoria = producto.Categoria?.Nombre, // Comprueba null por seguridad
                     Imagen = producto.Imagen,
                     Precio = producto.Precio,
                     Stock = producto.Stock
@@ -67,21 +103,23 @@ namespace Productos.Services.Services
 
                 return productoResponse;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine($"Error obteniendo el producto por ID {id}: {ex.Message}");
                 throw;
             }
         }
 
-        public List<Categoria> ObtenerTodasLasCategorias()
+        public async Task<List<Categoria>> ObtenerTodasLasCategoriasAsync()
         {
             try
             {
-                var categorias = _productoDbContext.Categorias.ToList();
+                var categorias = await _productoDbContext.Categorias.ToListAsync();
                 return categorias;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine($"Error obteniendo categorias: {ex.Message}");
                 throw;
             }
         }
@@ -108,19 +146,25 @@ namespace Productos.Services.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error: {ex.Message}");
+                Console.WriteLine($"Error creando el producto: {ex.Message}");
                 throw;
             }
         }
 
 
-        public Producto ActualizarProducto(ProductoUpdateRequest peticion)
+        public async Task<Producto?> ActualizarProductoAsync(ProductoUpdateRequest peticion)
         {
             try
             {
-                var producto = _productoDbContext.Productos
-                    .FirstOrDefault(x => x.Id == peticion.Id);
+                var producto = await _productoDbContext.Productos
+                    .FirstOrDefaultAsync(x => x.Id == peticion.Id);
 
+                if (producto == null)
+                {
+                    return null; // Regresa null si no lo encuentra
+                }
+
+                // Actualiza propiedades
                 producto.Nombre = peticion.Nombre;
                 producto.Descripcion = peticion.Descripcion;
                 producto.CategoriaId = peticion.CategoriaId;
@@ -128,12 +172,12 @@ namespace Productos.Services.Services
                 producto.Precio = peticion.Precio;
                 producto.Stock = peticion.Stock;
 
-                _productoDbContext.SaveChanges();
-
+                await _productoDbContext.SaveChangesAsync();
                 return producto;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine($"Error actualizando el producto {peticion.Id}: {ex.Message}");
                 throw;
             }
         }
@@ -144,18 +188,22 @@ namespace Productos.Services.Services
                 .FirstOrDefaultAsync(x => x.Id == peticion.ProductoId);
 
             if (producto == null)
-                return null;
+            {
+                return null; // Regresa null si no lo encuentra
+            }
 
-            // Incrementar o decrementar el stock basado en el tipo de transacción
+            // Incrementa o decrementa el stock basado en el tipo de transacción
             if (peticion.EsIncremento)
             {
                 producto.Stock += peticion.Cantidad;
             }
             else
             {
-                // Verificar si hay suficiente stock para la venta
+                // Verifica si hay suficiente stock para la venta
                 if (producto.Stock < peticion.Cantidad)
-                    throw new Exception("Stock insuficiente para realizar esta venta");
+                {
+                    throw new InvalidOperationException("Stock insuficiente para la venta");
+                }   
 
                 producto.Stock -= peticion.Cantidad;
             }
@@ -165,20 +213,32 @@ namespace Productos.Services.Services
         }
 
 
-        public Producto? EliminarProducto(int id)
+        // TODO: Agregar verificación para transacciones existentes antes de permitir la eliminación
+        public async Task<Producto?> EliminarProductoAsync(int id)
         {
+            // IMPORTANTE: Agregue lógica aquí para llamar al servicio de Transacciones
+            // para comprobar si existen transacciones para este ID de producto.
+            // Si existen, devuelva un valor nulo o genere una excepción indicando que
+            // no se permite la eliminación.
+
             try
             {
-                var producto = _productoDbContext.Productos
-                    .FirstOrDefault(x => x.Id == id);
+                var producto = await _productoDbContext.Productos
+                    .FirstOrDefaultAsync(x => x.Id == id);
 
-                _productoDbContext.Remove(producto);
-                _productoDbContext.SaveChanges();
+                if (producto == null)
+                {
+                    return null; // Regresa null si no lo encuentra
+                }
+
+                _productoDbContext.Productos.Remove(producto); // Usa metodo Remove
+                await _productoDbContext.SaveChangesAsync();
 
                 return producto;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine($"Error borrando el producto {id}: {ex.Message}");
                 throw;
             }
         }
