@@ -1,20 +1,18 @@
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { NgModule, Component, OnInit, OnDestroy } from '@angular/core';
-import { Subject, Observable, of } from 'rxjs';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Subject, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, takeUntil, catchError, tap, finalize } from 'rxjs/operators';
 
 import { Producto } from '../../modelos/producto.model';
 import { Categoria } from '../../modelos/categoria.model';
 import { ProductoService } from '../../servicios/producto.service';
 
-// Define una interfaz para filtros para una mejor seguridad de tipos
+// Define una interfaz para filtros
 interface ProductoFiltros {
     nombre: string | null;
     categoriaId: number | null;
     precioMin: number | null;
     precioMax: number | null;
-    // Agrega otros filtros según sea necesario
+    // Agrega más filtros según sea necesario
 }
 
 @Component({
@@ -118,7 +116,7 @@ export class ListaProductosComponent implements OnInit, OnDestroy {
     cargarCategorias() {
         this.categoriasLoadingError = null;
         this.productoService.obtenerCategorias().pipe(
-            takeUntil(this.destroy$) // Unsubscribe on destroy
+            takeUntil(this.destroy$) // Darse de baja al destruir
         ).subscribe({
             next: (data) => {
                 this.categoriasDisponibles = data;
@@ -143,7 +141,6 @@ export class ListaProductosComponent implements OnInit, OnDestroy {
         }
 
         const foundCategory = this.categoriasDisponibles.find(cat => cat.id === categoryId);
-
         return foundCategory ? foundCategory.nombre : 'Desconocida'; // O manejarlo según sea necesario
     }
 
@@ -152,7 +149,7 @@ export class ListaProductosComponent implements OnInit, OnDestroy {
         const confirmacion = confirm('¿Seguro de que desea eliminarlo?');
 
         if (confirmacion) {
-            this.isLoading = true; // Opcionalmente mostrar la carga durante la eliminación
+            this.isLoading = true; // Opcionalmente muestra carga durante eliminación
             this.productoService.eliminarProducto(id).pipe(
                 takeUntil(this.destroy$), // Darse de baja al destruir
                 finalize(() => this.isLoading = false) // Indicador de parada de carga
@@ -160,13 +157,13 @@ export class ListaProductosComponent implements OnInit, OnDestroy {
                 next: () => {
                     // Eliminar producto de la lista LOCALMENTE después de una eliminación exitosa
                     this.productos = this.productos.filter(p => p.id !== id);
-                    // Opcionalmente, active una recarga si la lógica del lado del servidor afecta significativamente la vista
+                    // Opcionalmente, recarga si la lógica del lado del servidor afecta la vista
                     // this.aplicarFiltros();
                     alert('Producto eliminado exitosamente'); // Considere usar un sistema de notificación menos intrusivo
                 },
                 error: (error) => {
                     console.error('Error al eliminar producto:', error);
-                    alert('No se pudo eliminar el producto. Verifique si tiene transacciones asociadas'); // Sugerencia de error más específica
+                    alert('No se pudo eliminar el producto.');
                 }
             });
         }
