@@ -113,7 +113,7 @@ export class AgregarTransaccionComponent implements OnInit {
             precioTotal: this.calcularPrecioTotal()
         };
 
-        this.transaccionService.guardarTransaccion(transaccion).subscribe({
+        this.transaccionService.crearTransaccion(transaccion).subscribe({
             next: (response) => {
                 console.log('Transacción guardada:', response);
                 alert('Transacción agregada exitosamente!');

@@ -50,7 +50,7 @@ export class EditarTransaccionComponent implements OnInit {
 
         // Fetch the transaction data first
         console.log("Obteniendo detalles de la transacción...");
-        this.transaccionService.obtenerTransaccion(this.transaccionId).subscribe({
+        this.transaccionService.obtenerTransaccionPorId(this.transaccionId).subscribe({
             next: (transaccion) => {
                 console.log("Datos base de la transacción recibidos:", JSON.stringify(transaccion, null, 2));
 

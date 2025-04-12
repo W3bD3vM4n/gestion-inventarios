@@ -39,7 +39,7 @@ export class AgregarProductoComponent implements OnInit {
 
     onSubmit(): void {
         if (this.formularioProducto.valid) {
-            this.productoService.guardarProducto(this.formularioProducto.value)
+            this.productoService.crearProducto(this.formularioProducto.value)
                 .subscribe({
                     next: (response) => {
                         console.log('Producto guardado:', response);
