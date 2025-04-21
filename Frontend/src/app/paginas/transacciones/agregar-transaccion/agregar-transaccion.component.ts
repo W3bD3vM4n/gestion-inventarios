@@ -33,7 +33,10 @@ export class AgregarTransaccionComponent implements OnInit {
         // Agrega listeners para cambios en producto, cantidad y tipo de transacción
         this.formularioTransaccion.get('tipoTransaccionId')?.valueChanges.subscribe(() => this.verificarStock());
         this.formularioTransaccion.get('productoId')?.valueChanges.subscribe(() => this.verificarStock());
-        this.formularioTransaccion.get('productoId')?.valueChanges.subscribe(() => this.actualizarPrecioUnitario());
+        this.formularioTransaccion.get('productoId')?.valueChanges.subscribe(value => {
+            console.log('ID de producto cambiado:', value);
+            this.actualizarPrecioUnitario();
+        });
         this.formularioTransaccion.get('cantidad')?.valueChanges.subscribe(() => this.verificarStock());
     }
 
@@ -48,9 +51,15 @@ export class AgregarTransaccionComponent implements OnInit {
     }
 
     cargarProductos(): void {
+        console.log('Iniciando carga de productos...');
         this.productoService.obtenerProductos().subscribe({
             next: (productos) => {
                 this.productos = productos;
+                console.log('Productos cargados:', productos);
+                // Registra la estructura del primer producto
+                if (productos.length > 0) {
+                    console.log('Estructura del primer producto:', JSON.stringify(productos[0]));
+                }
             },
             error: (error) => {
                 console.error('Error al cargar productos:', error);
@@ -90,11 +99,38 @@ export class AgregarTransaccionComponent implements OnInit {
 
     actualizarPrecioUnitario(): void {
         const productoId = this.formularioTransaccion.get('productoId')?.value;
-        if (!productoId) return;
+        console.log('Llamando a actualizarPrecioUnitario, productoId:', productoId);
+        console.log('Tipo de productoId:', typeof productoId);
 
-        const productoSeleccionado = this.productos.find(p => p.id === productoId);
+        if (!productoId) {
+            console.log('No se seleccionó ningún producto, regresando');
+            return;
+        }
+
+        // Registra todos los ID de productos para compararlos con el ID seleccionado
+        console.log('IDs de productos disponibles:', this.productos.map(p => ({ id: p.id, tipo: typeof p.id })));
+
+        // Prueba un enfoque más seguro en cuanto a tipos
+        let productoSeleccionado: Producto | undefined;
+
+        // Prueba comparando ambos string y números
+        // let productoSeleccionado = this.productos.find(p => p.id === productoId);
+
+        // Convierte a número para comparar si es un string
+        const idToCompare = typeof productoId === 'string' ? Number(productoId) : productoId;
+
+        // Utiliza el valor convertido para la búsqueda
+        productoSeleccionado = this.productos.find(p => p.id === idToCompare);
+
+        console.log('Producto seleccionado:', productoSeleccionado);
+
         if (productoSeleccionado) {
+            console.log('Estableciendo precioUnitario a:', productoSeleccionado.precio);
             this.formularioTransaccion.get('precioUnitario')?.setValue(productoSeleccionado.precio);
+        } else {
+            console.log('Producto no encontrado en el array de productos');
+            // Registra todo el array de productos para ver con qué estamos tratando
+            console.log('Array completo de productos:', this.productos);
         }
     }
 
