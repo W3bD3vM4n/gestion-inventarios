@@ -1,3 +1,18 @@
 .custom-shadow {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
+
+.centered-column {
+    text-align: center !important;
+}
+
+.header-cell {
+    background-color: #27272A !important;
+    color: white !important;
+    font-size: 16px !important;
+    font-weight: 500 !important;
+}
+
+.data-cell {
+    color: #1A1B1F !important;
+}

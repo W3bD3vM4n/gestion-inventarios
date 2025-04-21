@@ -59,7 +59,13 @@ import { HomeComponent } from './componentes/home/home.component';
         provideAnimationsAsync(),
         providePrimeNG({
             theme: {
-                preset: Lara
+                preset: Lara,
+                // Activa el tema "claro"
+                options: {
+                  prefix: 'p',
+                  darkModeSelector: '.primeng-dark-mode',
+                  cssLayer: false,
+                },
             }
         })
     ],

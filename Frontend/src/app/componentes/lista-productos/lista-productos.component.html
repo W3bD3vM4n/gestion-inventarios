@@ -87,25 +87,25 @@
         >
             <ng-template #header>
                 <tr>
-                    <th>ID</th>
-                    <th>Nombre</th>
-                    <th>Descripción</th>
-                    <th>Categoría</th>
-                    <th>Precio</th>
-                    <th>Stock</th>
-                    <th>Acciones</th>
+                    <th class="header-cell">ID</th>
+                    <th class="header-cell">Nombre</th>
+                    <th class="header-cell">Descripción</th>
+                    <th class="header-cell">Categoría</th>
+                    <th class="header-cell centered-column">Precio</th>
+                    <th class="header-cell centered-column">Stock</th>
+                    <th class="header-cell centered-column">Acciones</th>
                 </tr>
             </ng-template>
             <ng-template #body let-producto>
                 <tr>
-                    <td>{{ producto.id }}</td>
-                    <td>{{ producto.nombre }}</td>
-                    <td>{{ (producto.descripcion && producto.descripcion.length > 60) ? (producto.descripcion | slice:0:60) + '...' : producto.descripcion }}</td>
-                    <td>{{ obtenerNombreDeCategoria(producto.categoriaId) }}</td>
-                    <td>{{ producto.precio | currency:'USD':'symbol':'1.2-2' }}</td>
-                    <td>{{ producto.stock }}</td>
+                    <td class="text-sm data-cell">{{ producto.id }}</td>
+                    <td class="text-sm data-cell">{{ producto.nombre }}</td>
+                    <td class="text-sm data-cell">{{ (producto.descripcion && producto.descripcion.length > 60) ? (producto.descripcion | slice:0:60) + '...' : producto.descripcion }}</td>
+                    <td class="text-sm data-cell">{{ obtenerNombreDeCategoria(producto.categoriaId) }}</td>
+                    <td class="centered-column text-sm data-cell">{{ producto.precio | currency:'USD':'symbol':'1.2-2' }}</td>
+                    <td class="centered-column text-sm data-cell">{{ producto.stock }}</td>
                     <td>
-                        <div class="flex items-center space-x-2">
+                        <div class="flex items-center space-x-2 text-sm">
                             <a [routerLink]="['/editar-producto', producto.id]"
                                 class="text-indigo-600 hover:text-indigo-900"
                                 title="Editar Producto">
