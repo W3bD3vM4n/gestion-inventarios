@@ -41,7 +41,18 @@ export class ListaTransaccionesComponent implements OnInit, OnDestroy, AfterView
     displayedColumns: string[] = ['id', 'fecha', 'tipoTransaccion', 'producto', 'cantidad', 'precioUnitario', 'precioTotal', 'acciones'];
 
     @ViewChild(MatSort) sort!: MatSort;
-    @ViewChild(MatPaginator) paginator!: MatPaginator;
+    private _paginator!: MatPaginator;
+
+    // Usa un setter para detectar cuándo el paginador está disponible
+    @ViewChild(MatPaginator, { static: false })
+    set paginator(paginator: MatPaginator) {
+        this._paginator = paginator;
+        if (this._paginator) {
+            console.log('Paginator set:', this._paginator);
+            this.dataSource.paginator = this._paginator;
+            this.dataSource._updateChangeSubscription(); // Fuerza actualización
+        }
+    }
 
     // Objeto de estado de filtro
     filtros: TransaccionFiltros = {
@@ -84,11 +95,14 @@ export class ListaTransaccionesComponent implements OnInit, OnDestroy, AfterView
         ).subscribe(data => {
             this.transacciones = data;
             this.dataSource.data = data;
-
-            // Resetea el paginador a primera página
-            // cuando hay cambio de datos
-            if (this.paginator) {
-                this.paginator.firstPage();
+            console.log('Longitud de Data Source:', this.dataSource.data.length);
+            // Cuando hay cambio de datos
+            if (this._paginator) {
+                // El paginador se aplica después de actualizar datos
+                this.dataSource.paginator = this._paginator;
+                // Resetea el paginador a primera página
+                this._paginator.firstPage();
+                this.dataSource._updateChangeSubscription();
             }
         });
 
@@ -102,11 +116,8 @@ export class ListaTransaccionesComponent implements OnInit, OnDestroy, AfterView
     }
 
     ngAfterViewInit() {
-        this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
-
-        // Verifica que el paginador trabaja correctamente
-        this.dataSource._updateChangeSubscription();
+        console.log('AfterViewInit - Paginator:', this._paginator);
     }
 
     cargarDatosParaFiltros() {
@@ -177,6 +188,12 @@ export class ListaTransaccionesComponent implements OnInit, OnDestroy, AfterView
                     this.transacciones = this.transacciones.filter(t => t.id !== id);
                     // Opcionalmente, recarga si la lógica del lado del servidor afecta la vista
                     // this.aplicarFiltros();
+                    this.dataSource.data = this.transacciones;
+                    if (this._paginator) {
+                        this.dataSource.paginator = this._paginator;
+                        this._paginator.firstPage();
+                        this.dataSource._updateChangeSubscription();
+                    }
                     alert('Transacción eliminada exitosamente');
                 },
                 error: (error) => {
