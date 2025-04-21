@@ -1,6 +1,10 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
 import { Subject, of, forkJoin } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, takeUntil, catchError, tap, finalize } from 'rxjs/operators';
+
+import { MatTableDataSource } from '@angular/material/table';
+import { MatSort } from '@angular/material/sort';
+import { MatPaginator } from '@angular/material/paginator';
 
 import { Transaccion } from '../../modelos/transaccion.model';
 import { TipoTransaccion } from '../../modelos/tipo-transaccion.model';
@@ -23,7 +27,7 @@ interface TransaccionFiltros {
     templateUrl: './lista-transacciones.component.html',
     styleUrl: './lista-transacciones.component.css'
 })
-export class ListaTransaccionesComponent implements OnInit, OnDestroy {
+export class ListaTransaccionesComponent implements OnInit, OnDestroy, AfterViewInit {
     transacciones: Transaccion[] = [];
     tiposTransaccionDisponibles: TipoTransaccion[] = [];
     productosDisponibles: Producto[] = [];
@@ -32,6 +36,12 @@ export class ListaTransaccionesComponent implements OnInit, OnDestroy {
     errorMessage: string | null = null;
     tiposLoadingError: string | null = null;
     productosLoadingError: string | null = null;
+
+    dataSource = new MatTableDataSource<Transaccion>([]);
+    displayedColumns: string[] = ['id', 'fecha', 'tipoTransaccion', 'producto', 'cantidad', 'precioUnitario', 'precioTotal', 'acciones'];
+
+    @ViewChild(MatSort) sort!: MatSort;
+    @ViewChild(MatPaginator) paginator!: MatPaginator;
 
     // Objeto de estado de filtro
     filtros: TransaccionFiltros = {
@@ -73,6 +83,13 @@ export class ListaTransaccionesComponent implements OnInit, OnDestroy {
             takeUntil(this.destroy$)
         ).subscribe(data => {
             this.transacciones = data;
+            this.dataSource.data = data;
+
+            // Resetea el paginador a primera página
+            // cuando hay cambio de datos
+            if (this.paginator) {
+                this.paginator.firstPage();
+            }
         });
 
         // Provoca carga inicial de datos
@@ -82,6 +99,14 @@ export class ListaTransaccionesComponent implements OnInit, OnDestroy {
     ngOnDestroy() {
         this.destroy$.next();
         this.destroy$.complete();
+    }
+
+    ngAfterViewInit() {
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
+
+        // Verifica que el paginador trabaja correctamente
+        this.dataSource._updateChangeSubscription();
     }
 
     cargarDatosParaFiltros() {

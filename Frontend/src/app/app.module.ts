@@ -8,6 +8,10 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { providePrimeNG } from 'primeng/config';
 import Lara from '@primeng/themes/lara';
 
+import { MatTableModule } from '@angular/material/table';
+import { MatSortModule } from '@angular/material/sort';
+import { MatPaginatorModule } from '@angular/material/paginator';
+
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ListaProductosComponent } from './componentes/lista-productos/lista-productos.component';
@@ -46,7 +50,10 @@ import { HomeComponent } from './componentes/home/home.component';
         HttpClientModule,
         ReactiveFormsModule,
         FormsModule,
-        TableModule
+        TableModule,
+        MatTableModule,
+        MatSortModule,
+        MatPaginatorModule
     ],
     providers: [
         provideAnimationsAsync(),
