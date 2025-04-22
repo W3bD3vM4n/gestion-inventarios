@@ -23,6 +23,7 @@ export class EditarTransaccionComponent implements OnInit {
     readonly TIPO_VENTA_ID = 2; // Asigna el ID correspondiente a las ventas
     productoOriginal: any = null; // Para almacenar el producto y cantidad originales
     transaccionOriginal: Transaccion | null = null; // Para almacenar la transacción original
+    precioTotalCalculado: number = 0;
 
     constructor(
         private generarFormulario: FormBuilder,
@@ -35,20 +36,20 @@ export class EditarTransaccionComponent implements OnInit {
     ngOnInit(): void {
         console.log("Iniciando ngOnInit de editar-transaccion...");
 
-        // Initialize the form structure FIRST
+        // Inicializa la estructura del formulario PRIMERO
         this.iniciarFormulario();
 
-        // Get transaccion ID from the route
+        // Obtiene el ID de transacción de la ruta
         this.transaccionId = Number(this.ruta.snapshot.paramMap.get('id'));
         console.log('Transaccion ID obtenido de la ruta:', this.transaccionId);
 
         if (!this.transaccionId) {
             console.error('Transaccion ID invalido');
-            this.router.navigate(['/transacciones']); // Redirect if ID is invalid
+            this.router.navigate(['/transacciones']); // Redirige si el ID no es valido
             return;
         }
 
-        // Fetch the transaction data first
+        // Obtiene primero los datos de la transacción
         console.log("Obteniendo detalles de la transacción...");
         this.transaccionService.obtenerTransaccionPorId(this.transaccionId).subscribe({
             next: (transaccion) => {
@@ -56,30 +57,30 @@ export class EditarTransaccionComponent implements OnInit {
 
                 if (!transaccion) {
                     console.error('No se encontraron datos de la transacción.');
-                    this.router.navigate(['/transacciones']); // Redirect if not found
+                    this.router.navigate(['/transacciones']); // Redirige si no se encuentra
                     return;
                 }
 
-                // Store the original transaction
+                // Almacena la transacción original
                 this.transaccionOriginal = { ...transaccion };
 
-                // Now, fetch the data needed for dropdowns (Products and Transaction Types) concurrently
+                // Obtiene los datos necesarios para los DropDownsList (productos y tipos de transacción) simultáneamente
                 console.log("Cargando datos para dropdowns (productos y tipos)...");
                 forkJoin({
-                    productos: this.cargarProductos(), // Make these return the Observable
-                    tipos: this.cargarTiposTransaccion() // Make these return the Observable
+                    productos: this.cargarProductos(), // Hace que devuelvan el Observable
+                    tipos: this.cargarTiposTransaccion() // Hace que devuelvan el Observable
                 }).subscribe({
                     next: ({ productos, tipos }) => {
-                        // Data for dropdowns is now loaded
+                        // Los datos de los DropDownsList ya están cargados
                         this.productos = productos;
                         this.tiposTransaccion = tipos;
                         console.log("Productos y Tipos cargados.");
 
                         // --- PATCH THE FORM HERE ---
-                        // Ensure the property name matches the updated interface (tipoTransaccionId)
+                        // Se asegra que el nombre de la propiedad coincida con la interfaz actualizada (tipoTransaccionId)
                         console.log("Actualizando (patching) el formulario...");
                         this.formularioTransaccion.patchValue({
-                            tipoTransaccionId: this.transaccionOriginal?.tipoTransaccionId, // Use ID from original data
+                            tipoTransaccionId: this.transaccionOriginal?.tipoTransaccionId, // Usar ID de los datos originales
                             productoId: this.transaccionOriginal?.productoId,
                             cantidad: this.transaccionOriginal?.cantidad,
                             precioUnitario: this.transaccionOriginal?.precioUnitario,
@@ -87,13 +88,13 @@ export class EditarTransaccionComponent implements OnInit {
                         });
                         console.log("Formulario actualizado con datos.");
 
-                        // Store original product details needed for stock logic
+                        // Almacena los detalles originales del producto necesarios para la lógica de stock
                         this.productoOriginal = {
                             id: this.transaccionOriginal?.productoId,
                             cantidad: this.transaccionOriginal?.cantidad
                         };
 
-                        // Optional: Trigger validation/calculation after patching if needed
+                        // Opcional: Activar la validación/cálculo después de aplicar el parche si es necesario
                         this.verificarStock();
 
                     },
@@ -110,21 +111,21 @@ export class EditarTransaccionComponent implements OnInit {
 
     iniciarFormulario(): void {
         this.formularioTransaccion = this.generarFormulario.group({
-            tipoTransaccionId: ['', Validators.required], // Expects ID
+            tipoTransaccionId: ['', Validators.required], // Espera ID
             productoId: ['', Validators.required],
             cantidad: ['', [Validators.required, Validators.min(1)]],
-            precioUnitario: ['', [Validators.required, Validators.min(0.01)]], // Consider if this should be disabled initially
+            precioUnitario: ['', [Validators.required, Validators.min(0.01)]], // Considere si esto debería desactivarse inicialmente
             detalle: ['']
         });
 
-        // Setup listeners AFTER the form is created
+        // Configura los listeners DESPUÉS de crear el formulario
         this.setupFormListeners();
     }
 
-    // Modify loading methods to return Observables for forkJoin
+    // Modifica los métodos de carga para devolver Observables para forkJoin
     cargarProductos(): Observable<Producto[]> {
         return this.productoService.obtenerProductos().pipe(
-            tap({ // Use tap for side-effects like logging or alerting on error
+            tap({ // Utiliza pipe para detectar efectos secundarios
                 error: (error) => {
                     console.error('Error al cargar productos:', error);
                     alert('No se pudieron cargar los productos');
@@ -135,7 +136,7 @@ export class EditarTransaccionComponent implements OnInit {
 
     cargarTiposTransaccion(): Observable<TipoTransaccion[]> {
         return this.transaccionService.obtenerTiposTransaccion().pipe(
-            tap({ // Use tap for side-effects
+            tap({ // Utiliza pipe para detectar efectos secundarios
                 error: (error) => {
                     console.error('Error al cargar tipos de transacción:', error);
                     alert('No se pudieron cargar los tipos de transacción');
@@ -144,38 +145,62 @@ export class EditarTransaccionComponent implements OnInit {
         );
     }
 
-    // Keep listeners separate for clarity
+    // Mantiene los listeners separados para mayor claridad
     setupFormListeners(): void {
+        // Listeners existentes
         this.formularioTransaccion.get('tipoTransaccionId')?.valueChanges.subscribe(() => this.verificarStock());
         this.formularioTransaccion.get('productoId')?.valueChanges.subscribe((productId) => {
-            this.actualizarPrecioUnitario(productId); // Pass the ID
+            this.actualizarPrecioUnitario(productId); // Pasa el ID
             this.verificarStock();
         });
         this.formularioTransaccion.get('cantidad')?.valueChanges.subscribe(() => this.verificarStock());
-        // Consider adding listener for precioUnitario if it can be manually changed
+
+        // Actualiza los cálculos cuando cambia la cantidad
+        this.actualizarPrecioTotalVisual();
+
+        // Considere agregar un listener para precioUnitario si puede ser manual
         // this.formularioTransaccion.get('precioUnitario')?.valueChanges.subscribe(() => /* Recalculate something? */);
+
+        // Agrega este listener para cambios de precios
+        this.formularioTransaccion.get('precioUnitario')?.valueChanges.subscribe(() => {
+            this.actualizarPrecioTotalVisual();
+        });
     }
 
-    // Modify actualizarPrecioUnitario to accept productId
-    actualizarPrecioUnitario(productoId: number): void {
+    // Nuevo método para actualizar un indicador visual del precio total
+    actualizarPrecioTotalVisual(): void {
+        const total = this.calcularPrecioTotal();
+        // Si desea mostrar esto en algún lugar del UI
+        this.precioTotalCalculado = total; // Agrega esta propiedad al componente
+        console.log(`Precio total calculado: ${total}`);
+    }
+
+    // Modifica actualizarPrecioUnitario para aceptar productId
+    actualizarPrecioUnitario(productoId: number | string): void {
         if (!productoId) {
-            this.formularioTransaccion.get('precioUnitario')?.setValue(''); // Clear if no product selected
+            this.formularioTransaccion.get('precioUnitario')?.setValue(''); // Borra si no se ha seleccionado ningún producto
             return;
         }
-        const productoSeleccionado = this.productos.find(p => p.id === productoId);
+
+        // Añade conversión de tipos por seguridad
+        const idToCompare = typeof productoId === 'string' ? Number(productoId) : productoId;
+
+        const productoSeleccionado = this.productos.find(p => p.id === idToCompare);
+
         if (productoSeleccionado) {
             this.formularioTransaccion.get('precioUnitario')?.setValue(productoSeleccionado.precio);
             console.log(`Precio unitario actualizado a ${productoSeleccionado.precio} para producto ID ${productoId}`);
         } else {
-            this.formularioTransaccion.get('precioUnitario')?.setValue(''); // Clear if product not found (shouldn't happen)
+            this.formularioTransaccion.get('precioUnitario')?.setValue(''); // Limpia si no se encuentra el producto (no debería suceder)
+            console.log('Producto no encontrado en el array de productos');
         }
     }
 
     verificarStock(): void {
         const cantidadControl = this.formularioTransaccion.get('cantidad');
-        if (!cantidadControl) return; // Safety check
+        if (!cantidadControl) return; // Comprobación de seguridad
 
-        // Clear previous stock error first
+        // Primero borra el error de stock anterior
         if (cantidadControl.hasError('stockInsuficiente')) {
             const errors = cantidadControl.errors || {};
             delete errors['stockInsuficiente'];
@@ -186,33 +211,33 @@ export class EditarTransaccionComponent implements OnInit {
         const cantidad = cantidadControl.value;
         const tipoId = this.formularioTransaccion.get('tipoTransaccionId')?.value;
 
-        if (!productoId || !cantidad || !tipoId || cantidad <= 0) return; // Don't check if data is missing or invalid
+        if (!productoId || !cantidad || !tipoId || cantidad <= 0) return; // No comprueba si faltan datos o no son válidos
 
-        // Only verify stock for "Sale" type transactions
+        // Verifica el stock únicamente para transacciones de tipo “Venta”
         if (tipoId === this.TIPO_VENTA_ID) {
             const productoSeleccionado = this.productos.find(p => p.id === productoId);
 
             if (productoSeleccionado) {
                 let stockDisponibleReal = productoSeleccionado.stock;
 
-                // *** Crucial Stock Adjustment Logic for Editing ***
-                // If we are editing the *original* product of this transaction AND the *original* transaction was a SALE,
-                // we need to temporarily add back the original quantity to the available stock for the check.
+                // *** Lógica crucial de ajuste de existencias para la edición ***
+                // Si estamos editando el producto *original* de esta transacción Y la transacción *original* fue una VENTA,
+                // necesitamos agregar temporalmente la cantidad original al stock disponible para la verificación
                 if (this.transaccionOriginal && this.productoOriginal &&
-                    this.transaccionOriginal.tipoTransaccionId === this.TIPO_VENTA_ID && // Original was a sale
-                    this.productoOriginal.id === productoId) { // It's the same product we started editing
+                    this.transaccionOriginal.tipoTransaccionId === this.TIPO_VENTA_ID && // Originalmente era una venta
+                    this.productoOriginal.id === productoId) { // Es el mismo producto que empezamos a editar
 
-                    stockDisponibleReal += this.productoOriginal.cantidad; // Add back original amount
+                    stockDisponibleReal += this.productoOriginal.cantidad; // Agrega nuevamente el monto original
                     console.log(`Ajustando stock para verificación: ${productoSeleccionado.stock} (actual) + ${this.productoOriginal.cantidad} (original) = ${stockDisponibleReal}`);
                 }
-                // *** End of Adjustment Logic ***
+                // *** Fin de la lógica de ajuste ***
 
                 if (stockDisponibleReal < cantidad) {
                     console.warn(`Stock insuficiente: ${stockDisponibleReal} disponible < ${cantidad} solicitado.`);
                     cantidadControl.setErrors({ ...(cantidadControl.errors || {}), stockInsuficiente: true });
                 } else {
                     console.log(`Stock suficiente: ${stockDisponibleReal} disponible >= ${cantidad} solicitado.`);
-                    // The clearing logic at the start handles removing the error if it's now sufficient
+                    // La lógica de limpieza al inicio se encarga de eliminar el error si ahora es suficiente
                 }
             }
         }
@@ -221,7 +246,7 @@ export class EditarTransaccionComponent implements OnInit {
     calcularPrecioTotal(): number {
         const cantidad = this.formularioTransaccion.get('cantidad')?.value || 0;
         const precioUnitario = this.formularioTransaccion.get('precioUnitario')?.value || 0;
-        // Add a check to ensure types are numbers before multiplying
+        // Agrega una verificación para garantizar que los tipos sean números antes de multiplicar
         const total = (typeof cantidad === 'number' && typeof precioUnitario === 'number')
             ? cantidad * precioUnitario
             : 0;
@@ -229,11 +254,11 @@ export class EditarTransaccionComponent implements OnInit {
     }
 
     onSubmit(): void {
-        this.formularioTransaccion.markAllAsTouched(); // Mark all fields for validation feedback
+        this.formularioTransaccion.markAllAsTouched(); // Marca todos los campos para comentarios de validación
 
         if (this.formularioTransaccion.invalid) {
             console.log('Formulario inválido. Detalles:', this.formularioTransaccion.errors);
-            // Log detailed errors per control
+            // Registra (log) errores detallados por control
             Object.keys(this.formularioTransaccion.controls).forEach(key => {
                 const controlErrors = this.formularioTransaccion.get(key)?.errors;
                 if (controlErrors != null) {
@@ -244,24 +269,24 @@ export class EditarTransaccionComponent implements OnInit {
             return;
         }
 
-        // Prepare data for submission
-        // Ensure you are sending the correct ID field name expected by the backend API
-        const transaccionParaActualizar: Partial<Transaccion> = { // Use Partial<Transaccion> or a specific DTO
-            // id is passed in the URL/service method, usually not needed in the body for PUT
+        // Prepara datos para su envío (submission)
+        // Se asegura de enviar el ID correcto de nombre del campo esperado por la API de backend
+        const transaccionParaActualizar: Partial<Transaccion> = { // Usa Partial<Transaccion> o un DTO especifico
+            // El ID se pasa en el método URL/servicio, generalmente no es necesaria en el body para actualizar (PUT)
             tipoTransaccionId: this.formularioTransaccion.value.tipoTransaccionId,
             productoId: this.formularioTransaccion.value.productoId,
             cantidad: this.formularioTransaccion.value.cantidad,
             precioUnitario: this.formularioTransaccion.value.precioUnitario,
             precioTotal: this.calcularPrecioTotal(),
             detalle: this.formularioTransaccion.value.detalle,
-            // Include fecha if your backend expects it, otherwise it might update it server-side
-            // fecha: new Date() // Or keep original date? Depends on requirements.
+            // Incluye fecha si el backend lo espera, de lo contrario, podría actualizarlo en el lado del servidor
+            // fecha: new Date() // O conserva la fecha original? depende de los requisitos
         };
 
 
         console.log('Datos de transacción a actualizar:', JSON.stringify(transaccionParaActualizar, null, 2));
 
-        // Call the service
+        // Llama al servicio
         this.transaccionService.actualizarTransaccion(this.transaccionId, transaccionParaActualizar as Transaccion).subscribe({
             next: (response) => {
                 console.log('Transacción actualizada con éxito:', response);
@@ -270,10 +295,10 @@ export class EditarTransaccionComponent implements OnInit {
             },
             error: (error) => {
                 console.error('Error al actualizar la transacción - Detalles:', error);
-                // Provide more specific feedback if possible
+                // Proporciona comentarios específicos si es posible
                 let errorMsg = 'Error desconocido al actualizar la transacción.';
                 if (error.error) {
-                    // Check if backend sends structured error messages
+                    // Comprueba si el backend envía mensajes de error estructurados
                     if (typeof error.error === 'string') {
                         errorMsg = error.error;
                     } else if (error.error.message) {

@@ -30,7 +30,7 @@ export class AgregarProductoComponent implements OnInit {
             stock: ['', [Validators.required, Validators.min(1)]]
         });
 
-        // Obtener categorias de la API
+        // Obtiene categorias de la API
         this.productoService.obtenerCategorias().subscribe({
             next: (categorias) => this.categorias = categorias,
             error: (error) => console.error('Error al obtener categorías:', error)
